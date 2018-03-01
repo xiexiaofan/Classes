@@ -316,24 +316,77 @@ void RoomCardManager::setDebugMing(bool open) {
 }
 
 void RoomCardManager::openDebugListener() {
+    auto getMingCardTouchIndex = [&](Touch* touch, 
+                                     CardVec& vec,
+                                     const CardAlignConfig& config){
+        if (vec.empty() == 0)
+            return -1;
+        const auto& card_size = vec[0]->getSizeAfterZoom();
+        // y3 > y2 > y1 > y0
+        const float first_pos = vec[0]->getLeftBottomPosition();
+        const float y0 = first_pos.y - card_size.width() - config.gap_y;
+        const float y1 = first_pos.y;
+        const float y2 = first_pos.y - config.gap_y;
+        const float y3 = first_pos.y + card_size.width();
+        auto touch_in_node = this->convertTouchToNodeSpace(touch);
+        if (touch_in_node.y < y0 || touch_in_node.y > y3)
+            return -1;
+
+        bool double_rows = vec.size() > config.align_limit;
+        if (touch_in_node.y < y1 && !double_rows)
+            return -1;
+
+        int col = MIN((touch_in_node.x - first_pos.x) / config.gap_x, 
+                      double_rows ? config.align_limit : vec.size() - 1);
+        if (touch_in_node.x < first_pos.x || 
+            touch_in_node.x > col*config.gap_x + card.size().width)
+            return -1;
+        
+        if (config.align_type == -1) {
+            if (touch_in_node.y < y1 && double_rows)
+                return vec.size() > col+config.align_limit ? col+config.align_limit : -1;
+            if (touch_in_node.y < y2 && !double_rows)
+                return col;
+            if (touch_in_node.y < y2 && double_rows)
+                return vec.size() > col+config.align_limit ? col+config.align_limit : col;
+            return col;  // touch_in_node.y < y3
+        } else if (config.align_type == 1) {
+            if (touch_in_node.y < y1 && double_rows)
+                return vec.size() >= config.align_limit*2 - col ? col+config.align_limit : -1;
+            if (touch_in_node.y < y2 && !double_rows)
+                return col;
+            if (touch_in_node.y < y2 && double_rows)
+                return vec.size() >= config.align_limit*2 - col ? col+config.align_limit : col;
+            return col;
+        }
+        return -1;
+    };
+
     if (_debug_touch_card.empty()) {
-        // sead id = 1
         auto l1 = EventListenerTouchOneByOne::create();
         auto l2 = EventListenerTouchOneByOne::create();
-        
-        
-        
-        
-        
-        
-        
-        
-//        _eventDispatcher->addEventListenerWithFixedPriority(l1, 1);
-//        _eventDispatcher->addEventListenerWithFixedPriority(l2, 1);
+            l1->onTouchBegan = [&](Touch* touch, Event*){
+            int index = getMingCardTouchIndex(touch, _ming_card[0], _ming_align_config[0]);
+            if (index != -1) {
+                UICard* card = _ming_card[1][index];
+                card->switchSelected();
+                card->isSelected() ? card->addMask() : card->rmMask();
+            }
+            return false;
+        };
+        l2->onTouchBegan = [&](Touch* touch, Event*){
+            int index = getMingCardTouchIndex(touch, _ming_card[1], _ming_align_config[1]);
+            if (index != -1) {
+                UICard* card = _ming_card[1][index];
+                card->switchSelected();
+                card->isSelected() ? card->addMask() : card->rmMask();
+            }
+            return false;
+        };
+        _eventDispatcher->addEventListenerWithFixedPriority(l1, 1);
+        _eventDispatcher->addEventListenerWithFixedPriority(l2, 1);
         _debug_touch_card.push_back(l1);
         _debug_touch_card.push_back(l2);
-        
-        // sead id = 2
     } else {
         for (auto listener : _debug_touch_card)
             listener->setEnabled(true);
