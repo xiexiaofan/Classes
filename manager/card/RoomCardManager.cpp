@@ -368,7 +368,7 @@ void RoomCardManager::openDebugListener() {
             l1->onTouchBegan = [&](Touch* touch, Event*){
             int index = getMingCardTouchIndex(touch, _ming_card[0], _ming_align_config[0]);
             if (index != -1) {
-                UICard* card = _ming_card[1][index];
+                UICard* card = _ming_card[0][index];
                 card->switchSelected();
                 card->isSelected() ? card->addMask() : card->rmMask();
             }
