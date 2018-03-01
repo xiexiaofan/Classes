@@ -300,7 +300,8 @@ int SelectManager::confirmLandlordId() const {
 
 void SelectManager::callbackForConfirmLandlord(int landlord_id) {
     // debug
-    _manager->_debug_layer->updateCode("");
+    if (_manager->_debug_layer)
+        _manager->_debug_layer->updateCode("");
     
     PlayerData* pdata = _data->getPlayerData(landlord_id);
     pdata->setLandlord(true);

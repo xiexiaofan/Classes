@@ -53,6 +53,9 @@ public:
     cocos2d::Vec2 getRightBottomPosition() const;
     
     cocos2d::Vector<cocos2d::FiniteTimeAction*> getFlopAnimation();
+    
+    // debug method
+    void openTouchListenerForDebug();
 public:
     UICard();
     virtual ~UICard();

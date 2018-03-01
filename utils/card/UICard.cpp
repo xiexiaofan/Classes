@@ -143,6 +143,24 @@ Vector<FiniteTimeAction*> UICard::getFlopAnimation() {
     return {rb, call, rb_2};
 }
 
+void UICard::openTouchListenerForDebug() {
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->setSwallowTouches(true);
+    listener->onTouchBegan = [&](Touch* touch, Event*){
+        auto touch_in_node = this->convertTouchToNodeSpaceAR(touch);
+        auto size = this->getSizeAfterZoom() / this->getScale();
+        if (touch_in_node.x < size.width  * -0.5 ||
+            touch_in_node.x > size.width  *  0.5 ||
+            touch_in_node.y < size.height * -0.5 ||
+            touch_in_node.y > size.height *  0.5)
+            return false;
+        this->switchSelected();
+        this->isSelected() ? this->addMask() : this->rmMask();
+        return true;
+    };
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+}
+
 bool UICard::init(Suit suit, int number) {
     return init(CardData::create(suit, number));
 }

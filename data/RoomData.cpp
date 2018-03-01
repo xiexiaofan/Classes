@@ -101,8 +101,10 @@ void RoomDataManager::rmAllPlayerData(bool include_myself) {
 }
 
 void RoomDataManager::clearPlayerOptRec() {
-    for (auto iter : _pdata_map)
+    for (auto iter : _pdata_map) {
         iter.second->clearOptRecord();
+        iter.second->setLandlord(false);
+    }
 }
 
 void RoomDataManager::addCardData(CardData* card, int seat_id) {
