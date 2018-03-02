@@ -85,7 +85,8 @@ bool PlayCardManager::init() {
 
 void PlayCardManager::runCodeFirstly() {
     // debug
-    _manager->_debug_layer->updateCode(_xxf::en_play);
+    if (_manager->_debug_layer)
+        _manager->_debug_layer->updateCode(_xxf::en_play);
     
     // 获取地主座次id
     int cur_id = -1;

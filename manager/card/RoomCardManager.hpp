@@ -49,10 +49,9 @@ public:
     CardVec& getRestCardVec()                         { return _rest_card_vec; }
     CardVec& getInsideVec(int index)                  { return _inside_card[index]; }
     
-    // debug
+    // used for debug
     void setDebugMing(bool open);
     void openDebugListener();
-    void stopDebugListener();
     
     // decons.
     virtual ~RoomCardManager();
@@ -77,7 +76,6 @@ private:
     
     bool _debug_ming;
     std::vector<CardVec> _ming_card;
-    std::vector<cocos2d::EventListenerTouchOneByOne*> _debug_touch_card;
     
     CardVec _total_card_vec;
     CardVec _rest_card_vec;

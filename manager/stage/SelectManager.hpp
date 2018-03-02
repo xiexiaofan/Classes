@@ -45,6 +45,8 @@ public:
     void callbackForDouble(cocos2d::Event*);
     void callbackForNodouble(cocos2d::Event*);
     
+    //
+    void debugJudge();
 private:
     bool init() override;
     
@@ -57,9 +59,6 @@ private:
     
     int  confirmLandlordId() const;
     void callbackForConfirmLandlord(int landlord_id);
-    
-    //
-    void debugJudge();
     
 private:
     GameManager* _manager;

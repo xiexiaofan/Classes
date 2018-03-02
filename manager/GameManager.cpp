@@ -303,4 +303,10 @@ void GameManager::callbackForDebugSwitch(bool open) {
         if (_debug_layer)
             _debug_layer->setVisible(false);
     }
+    if (_stage == StageCode::PLAY)
+        _debug_layer->updateCode(_xxf::en_play);
+    else if (_stage == StageCode::SELECT) {
+        _select_manager->debugJudge();
+    } else
+        _debug_layer->updateCode("");
 }
