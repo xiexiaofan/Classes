@@ -205,11 +205,14 @@ void FirstScene::callbackForControl(Ref*, Widget::TouchEventType type) {
         
         auto visibleSize = Director::getInstance()->getVisibleSize();
         auto rootNode = CSLoader::createNode("animation/animation_table_bjq/animation_table_bjq.csb");
-//        rootNode->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
         addChild(rootNode);
-        auto action = CSLoader::createTimeline("animation/animation_table_bjq/animation_table_bjq.csb");
-        rootNode->runAction(action);
-        action->gotoFrameAndPlay(0, true);
-        
+        auto ac = CSLoader::createTimeline("animation/animation_table_bjq/animation_table_bjq.csb");
+  //      action->gotoFrameAndPlay(0, false);
+        ac->setLastFrameCallFunc([rootNode]{
+            rootNode->stopAllActions();
+            rootNode->removeFromParent();
+        });
+        ac->gotoFrameAndPlay(0, false);
+        rootNode->runAction(ac);
     }
 }

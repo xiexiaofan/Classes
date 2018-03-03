@@ -25,7 +25,7 @@ bool DebugLayer::init() {
         card->setPosition(delta + start_pos);
         this->addChild(card);
         Vector<FiniteTimeAction*> ac = card->getFlopAnimation();
-        ac.pushBack(DelayTime::create(.01f));
+        ac.pushBack(DelayTime::create(2.0f));
         card->runAction(RepeatForever::create(Sequence::create(ac)));
     }
     

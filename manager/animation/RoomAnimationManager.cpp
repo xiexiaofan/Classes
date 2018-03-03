@@ -8,6 +8,8 @@
 #include "RoomAnimationManager.hpp"
 #include "RoomData.hpp"
 #include "CommonDefineSet.hpp"
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
 using namespace cocos2d;
 
 static RoomAnimationManager* Instance = nullptr;
@@ -111,6 +113,11 @@ void RoomAnimationManager::clearAllPosted() {
         p->clearPosted();
 }
 
+void RoomAnimationManager::playCardTypeAnima(const CTName& name, bool is_landlord, bool is_male, cocos2d::Ref* arg) {
+    // 王炸， 炸弹， 飞机， 飞机带翅膀， 三带一， 顺子， 连队
+    
+}
+
 bool RoomAnimationManager::init() {
     bindCarrierNode(Director::getInstance()->getRunningScene());
     return true;
@@ -131,33 +138,48 @@ void RoomAnimationManager::clearPostedCreatorVec() {
 void PostedCreator::updatePosted(const std::string& content) {
     clearPosted();
     Node* node = nullptr;
-    std::string sound_path = "";
+    std::string path = "";
     if (content == _xxf::en_nocall) {
         node = getPosted("bu", "jiao");
+        path = "not_call";
     } else if (content == _xxf::en_call) {
         node = getPosted("jiao", "di", "zhu");
+        path = "call";
     } else if (content == _xxf::en_norob) {
         node = getPosted("bu", "qiang");
+        path = "not_rob";
     } else if (content == _xxf::en_rob) {
         node = getPosted("qiang", "di", "zhu");
+        path = "rob1";
     } else if (content == _xxf::en_nodouble) {
         node = getPosted("bu", "jia", "bei_01");  // "倍"
+        path = "not_double";
     } else if (content == _xxf::en_double) {
         node = getPosted("jia", "bei_01");
+        path = "double";
     } else if (content == _xxf::en_pass) {
-        int ran = RandomHelper::random_int(1, 2);
-        if (ran == 1)
+        int ran = RandomHelper::random_int(1, 3);
+        if (ran == 1) {
             node = getPosted("bu", "yao");
-        if (ran == 2)
+            path = "pass1";
+        } else if (ran == 2) {
+            node = getPosted("guo");
+            path = "pass2";
+        } else {
             node = getPosted("bu", "chu");
+            path = "pass3";
+        }
     } else if (content == _xxf::en_ready) {
         node = getPosted("zhun", "bei_02");  // "备"
     } else if (content == _xxf::en_bet_one) {
         node = getPosted("1", "fen");
+        path = "1_point";
     } else if (content == _xxf::en_bet_two) {
         node = getPosted("2", "fen");
+        path = "2_point";
     } else if (content == _xxf::en_bet_thr) {
         node = getPosted("3", "fen");
+        path = "3_point";
     }
     
     node->setScale(0.1f);
@@ -172,6 +194,19 @@ void PostedCreator::updatePosted(const std::string& content) {
         delta = Vec2(-node->getContentSize().width * 0.5 - _delta.x, 0);
     Spawn* ac = Spawn::create(MoveBy::create(0.2f, delta), ScaleTo::create(0.2f, 1.0), nullptr);
     node->runAction(ac);
+    
+    if (!path.empty()) {
+        path = std::string("sound/voice/f_") + path + ".mp3";  // or "m_"
+        SimpleAudioEngine::getInstance()->playEffect(path.c_str());
+    }
+}
+
+Node* PostedCreator::getPosted(const std::string& word) {
+    Node* ret = Node::create();
+    ret->setContentSize(Size(100, 50));
+    Sprite* s = Sprite::createWithSpriteFrameName("table_fonts_" + word + ".png");
+    ret->addChild(s);
+    return ret;
 }
 
 Node* PostedCreator::getPosted(const std::string& word_1, const std::string& word_2) {

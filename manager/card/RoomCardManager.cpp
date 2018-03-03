@@ -354,7 +354,7 @@ void RoomCardManager::updateCardCountLabel(int index) {
 
 void RoomCardManager::updateCardDisplayForInside(int index) {
     auto& vec = _inside_card.at(index);
-    int size = vec.size();
+    int size = static_cast<int>(vec.size());
     for (int i = 0; i < size; ++i) {
         UICard* card = vec.at(i);
         SingleCardConfig info = getSingleCardConfig(i, size, _inside_align_config[index]);
@@ -364,7 +364,7 @@ void RoomCardManager::updateCardDisplayForInside(int index) {
 
 void RoomCardManager::updateCardDisplayForOutside(int index) {
     auto& vec = _outside_card[index];
-    int size = vec.size();
+    int size = static_cast<int>(vec.size());
     if (index == 0) {
         for (int i = 0; i < size; ++i) {
             UICard* card = vec.at(i);
@@ -491,7 +491,7 @@ void RoomCardManager::updateDebugMingVec(int index) {
     }
     
     // adjust ming_card position
-    int size = debug_vec.size();
+    int size = static_cast<int>(debug_vec.size());
     const auto& config = _ming_align_config.at(index - 1);
     for (int i = 0; i < size; ++i)
         adjustCardAlign(debug_vec.at(i), i, size, config);

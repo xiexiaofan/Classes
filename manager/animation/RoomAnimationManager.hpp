@@ -71,6 +71,7 @@ public:
     
     void updatePosted(const std::string& content);
 protected:
+    cocos2d::Node* getPosted(const std::string& word);
     cocos2d::Node* getPosted(const std::string& word_1,
                              const std::string& word_2);
     cocos2d::Node* getPosted(const std::string& word_1,

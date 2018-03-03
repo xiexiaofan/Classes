@@ -7,6 +7,8 @@
 
 #include "UIOptButton.hpp"
 #include "CommonMethodSet.hpp"
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
 using namespace cocos2d;
 
 UIOptButton* UIOptButton::create(const std::string& fn,
@@ -99,9 +101,12 @@ bool UIOptButton::touchBegan(Touch* touch, Event* event) {
 void UIOptButton::touchEnded(Touch* touch, Event* event) {
     _bg->setColor(Color3B::WHITE);
     _fc->setColor(Color3B::WHITE);
-    bool touch_succes = _xxf::isTouchPointAtValidScope(touch, this, 1.1);   // 0.9 * 1.1 = 0.99
+    bool touch_succes = _xxf::isTouchPointAtValidScope(touch, this, 1.12);   // 0.9 * 1.1 = 0.99
     CallFunc* call_1 = CallFunc::create([this]{this->runAnimationForPressed(1.0);});
     CallFunc* call_2 = touch_succes && _callback ? CallFunc::create([this]{_callback(this);}) : nullptr;
     CallFunc* call_3 = _need_remove ? CallFunc::create([this]{this->removeFromParent();}) : nullptr;
     this->runAction(Sequence::create(call_1, DelayTime::create(0.1f), call_2, call_3, nullptr));
+    
+    if (touch_succes)
+        SimpleAudioEngine::getInstance()->playEffect("sound/effct/button.mp3");
 }

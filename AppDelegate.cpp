@@ -104,7 +104,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     //
     SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/01.mp3", true);
-
+    
     return true;
 }
 
