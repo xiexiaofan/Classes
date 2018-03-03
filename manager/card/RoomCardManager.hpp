@@ -49,12 +49,12 @@ public:
     CardVec& getRestCardVec()                         { return _rest_card_vec; }
     CardVec& getInsideVec(int index)                  { return _inside_card[index]; }
     
-    // used for debug
-    void setDebugMing(bool open);
-    void openDebugListener();
-    
     // decons.
     virtual ~RoomCardManager();
+    
+    // used for debug
+    void setDebugMing(bool open);
+    void clearAllDebugMing();
     
 private:
     bool init() override;
@@ -90,7 +90,6 @@ private:
 
     /**used for debug.*/
     bool _debug_ming;
-    std::vector<CardVec> _ming_card;
     std::map<int, CardVec> _debug_card;
     std::vector<CardAlignConfig> _ming_align_config;
 };

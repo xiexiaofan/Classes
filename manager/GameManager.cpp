@@ -29,6 +29,7 @@ static int   Match_Index[5] = {0, 1, 2, 3, 4};
 GameManager::~GameManager() {
     clearListenerForSelectEvent();
     clearListenerForPlayCardEvent();
+    RoomDataManager::getInstance()->rmAllPlayerData();
     RoomAnimationManager::getInstance()->destroyInstance();
 }
 
