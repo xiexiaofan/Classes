@@ -15,7 +15,6 @@ static Vec2  CardBirthPos(569, 365);
 
 RoomCardManager::~RoomCardManager() {
     RoomDataManager::getInstance()->rmAllCardData();
-    RoomDataManager::getInstance()->rmAllPlayerData();
     clearAllCard();
 }
 
@@ -54,7 +53,12 @@ void RoomCardManager::clearAllCard() {
         iter = _total_card_vec.erase(iter);
         card->removeFromParent();
     }
+    _inside_card.clear();
+    _outside_card.clear();
+    _selected_card.clear();
+    _rest_card_vec.clear();
     
+    /**used for debug. */
     for (auto& vec : _ming_card) {
         auto iter = vec.begin();
         while (iter != vec.end()) {
@@ -64,10 +68,6 @@ void RoomCardManager::clearAllCard() {
         }
     }
     _ming_card.clear();
-    _inside_card.clear();
-    _outside_card.clear();
-    _selected_card.clear();
-    _rest_card_vec.clear();
 }
 
 void RoomCardManager::callbackForDeal() {
@@ -91,22 +91,17 @@ void RoomCardManager::callbackForDeal() {
     for (int i = 0; i < _inside_card.size(); ++i)
         pFun(i);
     
-    // debug
+    /**used for debug. */
     auto createCard = [&](const CardVec& vec, const CardAlignConfig& align){
         CardVec ming;
         for (int i = 0; i < vec.size(); ++i) {
             UICard* card = UICard::create(vec.at(i)->getCardData());
             card->setModel(UICard::Model::TABLECARD);
             card->setFaceTowardUp(true);
-            card->setVisible(_debug_ming);
-            this->addChild(card);
-            SingleCardConfig config = getSingleCardConfig(i, vec.size(), align);
-            card->setPosition(config.point);
-            card->setScale(config.scale);
-            card->setLocalZOrder(config.zorder);
             ming.push_back(card);
-            if (_debug_ming)
-                card->openTouchListenerForDebug();
+            this->addChild(card);
+            adjustCardAlign(card, i, vec.size(), align);
+            _debug_ming ? card->openTouchListenerForDebug() : card->setVisible(false);
         }
         _ming_card.push_back(ming);
     };
@@ -166,10 +161,7 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
         const auto& align = _ming_align_config.at(landlord-1);
         for (auto i = 0; i < ming_vec.size(); ++i) {
             UICard* card = ming_vec.at(i);
-            SingleCardConfig config = getSingleCardConfig(i, ming_vec.size(), align);
-            card->setPosition(config.point);
-            card->setScale(config.scale);
-            card->setLocalZOrder(config.zorder);
+            adjustCardAlign(card, i, ming_vec.size(), align);
             if (_debug_ming)
                 card->openTouchListenerForDebug();
         }
@@ -177,6 +169,14 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
 }
 
 bool RoomCardManager::callbackForPopCard(int index) {
+    /** 出牌流程
+     * - 如果开启调试明牌：将调试明牌区引用到选牌区
+     * - 判断选牌区牌组是否符合出牌要求
+     *   符合
+     *      - 将选择的牌 移动到 出牌区 执行出牌动作
+     *   不符合
+     *      - 返回错误
+     */
     if (index != 0 && _debug_ming) {
         auto& m_vec = _ming_card[index-1];
         for (auto card : m_vec) {
@@ -338,6 +338,7 @@ void RoomCardManager::setDebugMing(bool open) {
     for (auto vec : _ming_card)
         for (auto card : vec)
             card->setVisible(_debug_ming);
+
     if (_debug_ming)
         openDebugListener();
 }
@@ -475,4 +476,76 @@ void RoomCardManager::updateMaskLayerForTouchCard(int first, int last) {
     auto& vec = _inside_card[0];
     for (int i = 0; i != vec.size(); ++i)
         i >= first && i <= last ? vec.at(i)->addMask() : vec.at(i)->rmMask();
+}
+
+void RoomCardManager::adjustCardAlign(UICard* card, int idx, int size, const CardAlignConfig& align) {
+    SingleCardConfig config = getSingleCardConfig(idx, size, align);
+    card->setScale(config.scale);
+    card->setPosition(config.point);
+    card->setLocalZOrder(config.zorder);
+}
+
+void RoomCardManager::updateDebugMingVec(int index) {
+    if (!_debug_ming || index == 0)
+        return;
+
+    const auto& inside_vec = _inside_card[index];
+    auto& debug_vec = _debug_card[index];
+    if (inside_vec.size() == debug_vec.size())
+        return;
+    
+    // remove from debug_vec
+    auto d_iter = debug_vec.begin();
+    while (inside_vec.size() < debug_vec.size() && d_iter != debug_vec.end()) {
+        int id = (*d_iter)->getCardData()->getId();
+        bool need_remove = true;
+        for (auto& card : inside_vec) {
+            int cmp = card->getCardData()->getId();
+            if (cmp > id)  continue;
+            if (cmp == id) need_remove = false;
+            break;
+        }
+        if (need_remove) {
+            UICard* card = *d_iter;
+            d_iter = debug_vec.erase(d_iter);
+            card->removeFromParent();
+        }
+        else 
+            ++d_iter;
+    }
+
+    // add to debug_vec
+    auto i_iter = inside_vec.begin();
+    while (inside_vec.size() > debug_vec.size() && i_iter != inside_vec.end()) {
+        int id = (*i_iter)->getCardData()->getId();
+        bool need_add = true;
+        size_t d_iter = debug_vec.begin();
+        for ( ; d_iter != debug_vec.end(); ++d_iter) {
+            int cmpId = debug_vec.at(d_iter)->getCardData()->getId();
+            if (cmpId > id) continue;
+            if (cmpId == id) need_add = false;
+            break;
+        }
+        if (need_add) {
+            UICard* card = UICard::create(id);
+            card->setMode(UICard::Model::TABLECARD);
+            card->setFaceTowardUp(true);
+            debug_vec.insert(d_iter, card);
+            this->addChild(card);
+        }
+        ++i_iter;
+    }
+    
+    // adjust ming_card position
+    for (int i = 0; i < debug_vec.size(); ++i) {
+        SingleCardConfig config = getSingleCardConfig(i, debug_vec.size(), _ming_align_config.at(index-1));
+        UICard* card = debug_vec.at(i);
+        card->setScale(config.scale);
+        card->setPosition(config.point);
+        card->setLocalZOrder(config.zorder);
+    }
+}
+
+void RoomCardManager::updateSelectedVecByDebugMing(int index) {
+
 }

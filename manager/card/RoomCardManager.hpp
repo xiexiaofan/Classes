@@ -68,15 +68,16 @@ private:
     
     int  getTouchCardIndex(cocos2d::Touch* touch) const;
     void updateMaskLayerForTouchCard(int first, int last);
-    
+
+    void adjustCardAlign(UICard* card, int idx, int size, const CardAlignConfig& align);
+
+    void updateDebugMingVec(int index);
+    void updateSelectedVecByDebugMing(int index);
+
 private:
     std::vector<CardAlignConfig> _inside_align_config;
     std::vector<CardAlignConfig> _outside_align_config;
-    std::vector<CardAlignConfig> _ming_align_config;
-    
-    bool _debug_ming;
-    std::vector<CardVec> _ming_card;
-    
+
     CardVec _total_card_vec;
     CardVec _rest_card_vec;
     
@@ -85,8 +86,13 @@ private:
     std::map<int, CardVec> _outside_card;
     
     std::vector<cocos2d::Label*> _inside_card_count;
-    
     cocos2d::EventListenerTouchOneByOne* _listener_touch_card;
+
+    /**used for debug.*/
+    bool _debug_ming;
+    std::vector<CardVec> _ming_card;
+    std::map<int, CardVec> _debug_card;
+    std::vector<CardAlignConfig> _ming_align_config;
 };
 
 
