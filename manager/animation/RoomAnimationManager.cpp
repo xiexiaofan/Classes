@@ -116,6 +116,9 @@ void RoomAnimationManager::clearAllPosted() {
 void RoomAnimationManager::playCardTypeAnima(const CTName& name, bool is_landlord, bool is_male, cocos2d::Ref* arg) {
     // 王炸， 炸弹， 飞机， 飞机带翅膀， 三带一， 顺子， 连队
     
+    
+    
+    
 }
 
 bool RoomAnimationManager::init() {

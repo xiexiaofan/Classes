@@ -224,4 +224,5 @@ std::vector<CardType> CardTypeHelper::foundGreaterCardType(const NumVec& src, co
 //                ret.push_back(type);
 //    }
 //    return ret;
+    return std::vector<CardType>();
 }

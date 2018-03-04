@@ -93,6 +93,7 @@ bool UIOptButton::touchBegan(Touch* touch, Event* event) {
         _bg->setColor(Color3B::GRAY);
         _fc->setColor(Color3B::GRAY);
         runAnimationForPressed(0.88);
+        SimpleAudioEngine::getInstance()->playEffect("sound/effect/button.mp3");
         return true;
     }
     return false;
@@ -106,7 +107,4 @@ void UIOptButton::touchEnded(Touch* touch, Event* event) {
     CallFunc* call_2 = touch_succes && _callback ? CallFunc::create([this]{_callback(this);}) : nullptr;
     CallFunc* call_3 = _need_remove ? CallFunc::create([this]{this->removeFromParent();}) : nullptr;
     this->runAction(Sequence::create(call_1, DelayTime::create(0.1f), call_2, call_3, nullptr));
-    
-    if (touch_succes)
-        SimpleAudioEngine::getInstance()->playEffect("sound/effct/button.mp3");
 }

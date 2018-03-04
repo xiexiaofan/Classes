@@ -211,7 +211,7 @@ void SelectManager::endSelect() {
     if (_cur_opt != _opt_list.end()) {
         _manager->stopListenerForTouchCard();
         _manager->setStageCode(GameManager::StageCode::DEAL);
-        SimpleToastManager::getInstance()->playToast("最新指令: 重新发牌");
+        SimpleToastManager::getInstance()->playToast("重新发牌");
         // debug
         if (_manager->_debug_layer)
             _manager->_debug_layer->updateCode("");

@@ -96,9 +96,9 @@ public:
     const OneStepInfo& getStepInfo(int index) const { return _step_info_vec.at(index); }
     void clearStepInfoVec()                         { _step_info_vec.clear(); }
     
-    const RoomMode& getRoomMode() const                     { return _mode; }
-    PlayerData* getPlayerData(int key)                      { return _pdata_map.at(key); }
-    const std::map<int, PlayerData*>& getPdataMap() const   { return _pdata_map; }
+    const RoomMode& getRoomMode() const                       { return _mode; }
+    PlayerData* getPlayerData(int key)                        { return _pdata_map.at(key); }
+    const std::map<int, PlayerData*>& getPdataMap() const     { return _pdata_map; }
     const std::vector<CardData*>& getPCardList(int key) const { return _pcard_map.at(key); }
     
 private:

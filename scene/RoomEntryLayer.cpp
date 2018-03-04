@@ -12,6 +12,8 @@
 #include "CommonMethodSet.hpp"
 #include "SimpleToastManager.hpp"
 #include "ui/UIScale9Sprite.h"
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
 using namespace cocos2d;
 using ui::Scale9Sprite;
 
@@ -238,6 +240,7 @@ void RoomEntryLayer::addlistenerForExitBtn() {
     listener->onTouchBegan = [&](Touch* touch, Event*)->bool{
         if (_xxf::isTouchPointAtValidScope(touch, this->getChildByName(Str_Exit), 1.2)) {
             this->getChildByName(Str_Exit)->runAction(ScaleTo::create(0.1f, 0.9));
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/button.mp3");
             return true;
         }
         return false;
@@ -258,6 +261,7 @@ void RoomEntryLayer::addListenerForClassicBtn() {
     listener->onTouchBegan = [&](Touch* touch, Event*)->bool{
         if (_xxf::isTouchPointAtValidScope(touch, _classic_btn) && _type != Type::CLASSIC) {
             this->lightenTypeBtn(Type::CLASSIC);
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/tab.mp3");
             return true;
         }
         return false;
@@ -283,6 +287,7 @@ void RoomEntryLayer::addListenerForFakeBtn() {
     listener->onTouchBegan = [&](Touch* touch, Event*)->bool{
         if (_xxf::isTouchPointAtValidScope(touch, _fake_btn) && _type != Type::FAKE) {
             this->lightenTypeBtn(Type::FAKE);
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/tab.mp3");
             return true;
         }
         return false;
@@ -308,6 +313,7 @@ void RoomEntryLayer::addListenerForNodealBtn() {
     listener->onTouchBegan = [&](Touch* touch, Event*)->bool{
         if (_xxf::isTouchPointAtValidScope(touch, _nodeal_btn) && _mode != Mode::NODEAL) {
             this->lightenModeBtn(Mode::NODEAL);
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/tab.mp3");
             return true;
         }
         return false;
@@ -333,6 +339,7 @@ void RoomEntryLayer::addListenerForDealBtn() {
     listener->onTouchBegan = [&](Touch* touch, Event*)->bool{
         if (_xxf::isTouchPointAtValidScope(touch, _deal_btn) && _mode != Mode::DEAL) {
             this->lightenModeBtn(Mode::DEAL);
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/tab.mp3");
             return true;
         }
         return false;
@@ -358,6 +365,7 @@ void RoomEntryLayer::addListenerForQStartBtn() {
     listener->onTouchBegan = [&](Touch* touch, Event*)->bool{
         if (_xxf::isTouchPointAtValidScope(touch, _qstart_btn)) {
             _qstart_btn->runAction(ScaleTo::create(0.1f, 0.8));  // 0.83 = 0.92 * 0.9
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/button.mp3");
             return true;
         }
         return false;
@@ -384,6 +392,7 @@ void RoomEntryLayer::addListenerForScrollRoom() {
         if (index != -1 && !_is_scrolling) {
             _selected_room_id = index;
             _room_vec.at(_selected_room_id)->runAnimationForPressed(0.9);
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/button.mp3");
             return true;
         }
         return false;

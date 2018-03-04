@@ -41,7 +41,7 @@ void PlayCardManager::callbackForMing(Event*) {
 }
 
 void PlayCardManager::callbackForTip(Event*) {
-    ;
+    SimpleToastManager::getInstance()->playToast("提示功能尚未完善");
 }
 
 void PlayCardManager::callbackForPlay(Event*) {
@@ -145,4 +145,5 @@ void PlayCardManager::endPlay() {
         _manager->_debug_layer->updateCode("");
     
     // 是否结算
+    SimpleToastManager::getInstance()->playToast("本局游戏结束");
 }

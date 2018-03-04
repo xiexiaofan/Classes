@@ -8,10 +8,12 @@
 #include "DealCardManager.hpp"
 #include "RoomCardManager.hpp"
 #include "RoomData.hpp"
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
 using namespace cocos2d;
 
 static const Vec2& BirthPos = Vec2(569, 365);
-static const float TotalTime = 1.5f;
+static const float TotalTime = 1.6f;
 static const float DealGap = TotalTime / RoomDataManager::getInstance()->getDealCardNum();
 static const float DealDur = DealGap * RoomDataManager::getInstance()->getPlayerNum();
 
@@ -22,6 +24,8 @@ void DealCardManager::startDeal() {
     _cur_deal_num = 0;
     _timer_count = 0;
     this->scheduleUpdate();
+    
+    SimpleAudioEngine::getInstance()->playEffect("sound/effect/dispatch_card.mp3");
 }
 
 std::vector<int> DealCardManager::createCardHeap(ShuffType type) {

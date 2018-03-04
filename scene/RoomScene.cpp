@@ -15,6 +15,8 @@
 #include "UITopInfoBar.hpp"
 #include "CommonDefineSet.hpp"
 #include "CommonMethodSet.hpp"
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
 using namespace cocos2d;
 
 enum zorder {
@@ -141,6 +143,7 @@ void RoomScene::addListenerForExitBtn() {
     listener->onTouchBegan = [&](Touch* touch, Event*)->bool{
         if (_xxf::isTouchPointAtValidScope(touch, this->getChildByName("Str_Exit"), 1.2)) {
             this->getChildByName("Str_Exit")->runAction(ScaleTo::create(0.1f, 0.9));
+            SimpleAudioEngine::getInstance()->playEffect("sound/effect/button.mp3");
             return true;
         }
         return false;

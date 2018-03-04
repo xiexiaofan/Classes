@@ -6,6 +6,9 @@
 //
 
 #include "UICard.hpp"
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
+
 using namespace cocos2d;
 
 enum zorder {
@@ -156,6 +159,7 @@ void UICard::openTouchListenerForDebug() {
             return false;
         this->switchSelected();
         this->isSelected() ? this->addMask() : this->rmMask();
+        SimpleAudioEngine::getInstance()->playEffect("sound/effect/select_card.mp3");
         return true;
     };
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
@@ -210,7 +214,7 @@ void UICard::drawFaceUp() {
     if (!_suit_small) {
         const Suit& suit = _data->getSuit();
         if (suit == Suit::JOKER) {
-            if (_data->getNumber() == 14) {
+            if (_data->getNumber() == 16) {  // num = 16 定义成“小王”
                 _number_sp->setColor(Color3B(0x1d, 0x0a, 0x01));
                 _suit_small = Sprite::createWithSpriteFrameName("poker_joker_s.png");
             } else {

@@ -204,10 +204,9 @@ void FirstScene::callbackForControl(Ref*, Widget::TouchEventType type) {
         SimpleToastManager::getInstance()->playToast("设置功能还待研究...");
         
         auto visibleSize = Director::getInstance()->getVisibleSize();
-        auto rootNode = CSLoader::createNode("animation/animation_table_bjq/animation_table_bjq.csb");
+        auto rootNode = CSLoader::createNode("animation/settle_win/settle_win_wylnnm.csd");
         addChild(rootNode);
-        auto ac = CSLoader::createTimeline("animation/animation_table_bjq/animation_table_bjq.csb");
-  //      action->gotoFrameAndPlay(0, false);
+        auto ac = CSLoader::createTimeline("animation/settle_win/settle_win_wylnnm.csd");
         ac->setLastFrameCallFunc([rootNode]{
             rootNode->stopAllActions();
             rootNode->removeFromParent();

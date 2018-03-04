@@ -8,6 +8,10 @@
 #include "RoomCardManager.hpp"
 #include "RoomData.hpp"
 #include "CommonMethodSet.hpp"
+#include "SimpleAiActionManager.hpp"
+#include "SimpleToastManager.hpp"
+#include "audio/include/SimpleAudioEngine.h"
+using namespace CocosDenshion;
 using namespace cocos2d;
 
 static int   Start_Touch_Card_Index = -1;
@@ -58,6 +62,8 @@ void RoomCardManager::clearAllCard() {
     _selected_card.clear();
     _rest_card_vec.clear();
     
+    _ai_manager->clearAllNumData();
+    
     /**used for debug. */
     clearAllDebugMing();
 }
@@ -79,6 +85,9 @@ void RoomCardManager::callbackForDeal() {
             MoveTo* mt_2 = MoveTo::create(0.15f, config.point);
             card->runAction(Sequence::create(DelayTime::create(0.4f), mt_1, DelayTime::create(0.08f), call, mt_2, nullptr));
         }
+        // ai manager
+        _ai_manager->addNumData(vec, index);
+        
     };
     for (int i = 0; i < _inside_card.size(); ++i)
         pFun(i);
@@ -129,6 +138,10 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
     } else { /**used for debug. */
         updateDebugMingVec(landlord);
     }
+    
+    // ai manager
+    _ai_manager->addNumData(_rest_card_vec, landlord);
+    _ai_manager->setPreId(landlord);
 }
 
 bool RoomCardManager::callbackForPopCard(int index) {
@@ -147,8 +160,11 @@ bool RoomCardManager::callbackForPopCard(int index) {
     
     // judge
     auto& selected = _selected_card[index];
-    if (selected.empty())
+    auto type = _ai_manager->doActionPlay(selected, index);
+    if (type.getCTName() == CTName::Undef)
         return false;
+    
+    SimpleToastManager::getInstance()->playToast(type.getDescribe());
     
     pushCardToOutside(index);
     updateCardDisplayForInside(index);
@@ -255,6 +271,7 @@ void RoomCardManager::openListenerForTouchCard() {
             return false;
         Start_Touch_Card_Index = i;
         this->updateMaskLayerForTouchCard(i, i);
+        SimpleAudioEngine::getInstance()->playEffect("sound/effect/select_card.mp3");
         return true;
     };
     _listener_touch_card->onTouchMoved = [this](Touch* touch, Event*){
@@ -268,7 +285,7 @@ void RoomCardManager::openListenerForTouchCard() {
                 continue;
             card->rmMask();
             card->isSelected() ? this->derefCardFromSelected(card, 0) : this->refCardToSelected(card, 0);
-            log("selected card size = %lu", _selected_card.at(0).size());
+//            log("selected card size = %lu", _selected_card.at(0).size());
         }
     };
     _eventDispatcher->addEventListenerWithSceneGraphPriority(_listener_touch_card, this);
@@ -305,14 +322,18 @@ void RoomCardManager::clearAllDebugMing() {
 bool RoomCardManager::init() {
     initCardAlignConfig();
     initCardCountLabel();
+    
+    _ai_manager = SimpleAiActionManager::create();
+    this->addChild(_ai_manager);
+    
     return true;
 }
 
 void RoomCardManager::initCardAlignConfig() {
     // 座位0，1，2的手牌位置参数
     CardAlignConfig zero_inside(Vec2(595, 86),   0, 99,  50, 0, 1.00);
-    CardAlignConfig one_inside( Vec2(960, 385),  1, 99,  0,  0, 0.40);
-    CardAlignConfig two_inside( Vec2(178, 385), -1, 99,  0,  0, 0.40);
+    CardAlignConfig one_inside( Vec2(960, 383),  1, 99,  0,  0, 0.35);
+    CardAlignConfig two_inside( Vec2(178, 383), -1, 99,  0,  0, 0.35);
     _inside_align_config.push_back(zero_inside);
     _inside_align_config.push_back(one_inside);
     _inside_align_config.push_back(two_inside);
@@ -335,8 +356,8 @@ void RoomCardManager::initCardAlignConfig() {
 void RoomCardManager::initCardCountLabel() {
     for (int i = 0; i < _inside_align_config.size(); ++i) {
         auto label = Label::createWithBMFont("fonts/fonts_yellow_num.fnt", "");
-        label->setPosition(_inside_align_config.at(i).align_point + Vec2(0, 5));
-        label->setScale(0.82);
+        label->setPosition(_inside_align_config.at(i).align_point + Vec2(0, 4));
+        label->setScale(0.75);
         label->setLocalZOrder(RoomDataManager::getInstance()->getTotalCardNum() + 1);
         this->addChild(label);
         _inside_card_count.push_back(label);
@@ -396,6 +417,7 @@ void RoomCardManager::updateCardDisplayForOutside(int index) {
             card->runAction(MoveTo::create(0.15f, config.point));
         }
     }
+    SimpleAudioEngine::getInstance()->playEffect("sound/effect/play_card.mp3");
 }
 
 int RoomCardManager::getTouchCardIndex(Touch* touch) const {
@@ -490,7 +512,7 @@ void RoomCardManager::updateDebugMingVec(int index) {
         ++i_iter;
     }
     
-    // adjust ming_card position
+    // adjust debug_card position
     int size = static_cast<int>(debug_vec.size());
     const auto& config = _ming_align_config.at(index - 1);
     for (int i = 0; i < size; ++i)

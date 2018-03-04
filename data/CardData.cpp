@@ -41,18 +41,20 @@ std::string CardData::getSuitStr() const {
 }
 
 std::string CardData::getNumberStr() const {
-    if (_number == 1)
-        return "a";
-    else if (_number == 11)
+    if (_number == 11)
         return "j";
     else if (_number == 12)
         return "q";
     else if (_number == 13)
         return "k";
-    else if (_number == 14 || _number == 15)
+    else if (_number == 14)
+        return "a";
+    else if (_number == 15)
+        return "2";
+    else if (_number == 16 || _number == 17)
         return "joker";
     else
-        return std::to_string(_number);
+        return std::to_string(_number);  // 3 ~ 10
 }
 
 void CardData::print() const {
@@ -60,14 +62,14 @@ void CardData::print() const {
 }
 
 bool CardData::init(Suit suit, int number) {
-    if (number < 1 || number > 15)
+    if (number < 3 || number > 17)
         return false;
     _suit = suit;
     _number = number;
     if (_suit == Suit::JOKER)
-        _id = _number == 14 ? 53 : 54;
+        _id = _number == 16 ? 53 : 54;
     else
-        _id = (_number-3) * 4 + static_cast<int>(_suit) + _number > 2 ? 0 :52;
+        _id = (_number-3) * 4 + static_cast<int>(_suit);
     return true;
 }
 
@@ -77,10 +79,10 @@ bool CardData::init(int id) {
     _id = id;
     if (_id > 52) {
         _suit = Suit::JOKER;
-        _number = _id == 53 ? 14 : 15;
+        _number = _id == 53 ? 16 : 17;
     } else {
         _suit = static_cast<Suit>((_id-1)%4 + 1);
-        _number = _id > 44 ? (_id-45)/4 + 1 : (id-1)/4 + 3;
+        _number = (_id - 1) / 4 + 3;
     }
     return true;
 }

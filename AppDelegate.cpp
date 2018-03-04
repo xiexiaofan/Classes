@@ -69,7 +69,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     // turn on display FPS
-    director->setDisplayStats(true);
+    director->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
@@ -104,7 +104,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     //
     SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/01.mp3", true);
-    
+    SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.6);
+   
     return true;
 }
 
