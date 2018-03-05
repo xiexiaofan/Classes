@@ -201,12 +201,12 @@ void FirstScene::callbackForReview(Ref*, Widget::TouchEventType type) {
 
 void FirstScene::callbackForControl(Ref*, Widget::TouchEventType type) {
     if (type == Widget::TouchEventType::ENDED) {
-        SimpleToastManager::getInstance()->playToast("设置功能还待研究...");
-        
+      //  SimpleToastManager::getInstance()->playToast("设置功能还待研究...");
         auto visibleSize = Director::getInstance()->getVisibleSize();
-        auto rootNode = CSLoader::createNode("animation/settle_win/settle_win_wylnnm.csd");
+        auto rootNode = CSLoader::createNode("animation/animation_fj/animation_fj_nm.csb");
         addChild(rootNode);
-        auto ac = CSLoader::createTimeline("animation/settle_win/settle_win_wylnnm.csd");
+        rootNode->setPosition(visibleSize * 0.5);
+        auto ac = CSLoader::createTimeline("animation/animation_fj/animation_fj_nm.csb");
         ac->setLastFrameCallFunc([rootNode]{
             rootNode->stopAllActions();
             rootNode->removeFromParent();

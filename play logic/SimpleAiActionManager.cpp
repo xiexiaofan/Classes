@@ -21,9 +21,9 @@ using namespace cocos2d;
     if (king_count == 1)
         return RestCTName::SingleKing;
 
-    const int& v0 = vec.at(0)->getCardDat()->getNumber();
-    const int& v1 = vec.at(1)->getCardDat()->getNumber();
-    const int& v2 = vec.at(2)->getCardDat()->getNumber();
+    const int& v0 = vec.at(0)->getCardData()->getNumber();
+    const int& v1 = vec.at(1)->getCardData()->getNumber();
+    const int& v2 = vec.at(2)->getCardData()->getNumber();
     if (v0 == v1 && v0 == v2)
         return RestCTName::Three;
 

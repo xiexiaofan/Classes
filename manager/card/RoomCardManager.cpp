@@ -16,6 +16,14 @@ using namespace cocos2d;
 
 static int   Start_Touch_Card_Index = -1;
 static Vec2  CardBirthPos(569, 365);
+static std::map<RestCTName, std::string> rest_path = {
+    {RestCTName::DoubleKing, "table_gz_sw.png"},
+    {RestCTName::SingleKing, "table_gz_dw.png"},
+    {RestCTName::Straight,   "table_gz_shunzi.png"},
+    {RestCTName::Three,      "table_gz_sanzhang.png"},
+    {RestCTName::Pair,       "table_gz_dz.png"},
+    {RestCTName::Flush,      "table_gz_hs.png"}
+};
 
 RoomCardManager::~RoomCardManager() {
     RoomDataManager::getInstance()->rmAllCardData();
@@ -61,8 +69,8 @@ void RoomCardManager::clearAllCard() {
     _outside_card.clear();
     _selected_card.clear();
     _rest_card_vec.clear();
-    
     _ai_manager->clearAllNumData();
+    rmRestCardType();
     
     /**used for debug. */
     clearAllDebugMing();
@@ -142,6 +150,13 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
     // ai manager
     _ai_manager->addNumData(_rest_card_vec, landlord);
     _ai_manager->setPreId(landlord);
+    
+    // identify rest card
+    auto type = SimpleAiActionManager::identifyRestCard(_rest_card_vec);
+    if (type != RestCTName::Common) {
+        initRestCardType(rest_path[type],
+                         SimpleAiActionManager::getRestCTNameMutiple(type));
+    }
 }
 
 bool RoomCardManager::callbackForPopCard(int index) {
@@ -190,14 +205,21 @@ void RoomCardManager::refCardToSelected(UICard* card, int index) {
 }
 
 void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int index) {
+    auto foundX = [](const CardVec& vec, int num){
+        size_t ret = 0;
+        for (; ret != vec.size(); ++ret)
+            if (!vec.at(ret)->isSelected() && vec.at(ret)->getCardData()->getNumber() == num)
+                break;
+        return ret;
+    };
+    
     resetSelected(index);
 
     auto& inside_vec = _inside_card[index];
     for (int num : num_vec) {
-        auto& iter = std::find(inside_vec.begin(), inside_vec.end(), [num]{const UIcard* card}{
-            return !card->isSelected() && card->getCardData()->getNumber() == num;
-        });
-        refCardToSelected(*iter, index);
+        size_t i = foundX(inside_vec, num);
+        if (i != inside_vec.size())
+            refCardToSelected(inside_vec.at(i), index);
     }
 
     if (_debug_ming && index != 0)
@@ -556,4 +578,23 @@ void RoomCardManager::updateDebugMingSelected(int index) {
             debug_vec[i]->addMask();
             debug_vec[i]->switchSelected();
         }
+}
+
+void RoomCardManager::initRestCardType(const std::string& path, int x) {
+    Sprite* sp = Sprite::createWithSpriteFrameName("table_gz_frame.png");
+    Sprite* type = Sprite::createWithSpriteFrameName(path);
+    Sprite* val  = Sprite::createWithSpriteFrameName("table_gz_x" + std::to_string(x) + ".png");
+    type->setPosition(20, sp->getContentSize().height*0.5);
+    sp->addChild(type);
+    val->setPosition(47, sp->getContentSize().height*0.5);
+    sp->addChild(val);
+    this->addChild(sp, 10, "RestCarType");
+    sp->setPosition(Director::getInstance()->getVisibleSize().width * 0.5,
+                    Director::getInstance()->getVisibleSize().height - 40);
+    sp->setRotation(-15);
+}
+
+void RoomCardManager::rmRestCardType() {
+    auto child = this->getChildByName("RestCarType");
+    if (child) child->removeFromParent();
 }

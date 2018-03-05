@@ -76,6 +76,9 @@ private:
     void updateDebugMingVec(int index);
     void updateSelectedVecByDebugMing(int index);
     void updateDebugMingSelected(int index);
+    
+    void initRestCardType(const std::string& path, int x);
+    void rmRestCardType();
 
 private:
     std::vector<CardAlignConfig> _inside_align_config;
@@ -83,6 +86,7 @@ private:
 
     CardVec _total_card_vec;
     CardVec _rest_card_vec;
+    cocos2d::Sprite* _rest_type;
     
     std::map<int, CardVec> _inside_card;
     std::map<int, CardVec> _selected_card;

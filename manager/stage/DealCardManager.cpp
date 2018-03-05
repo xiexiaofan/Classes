@@ -17,6 +17,8 @@ static const float TotalTime = 1.6f;
 static const float DealGap = TotalTime / RoomDataManager::getInstance()->getDealCardNum();
 static const float DealDur = DealGap * RoomDataManager::getInstance()->getPlayerNum();
 
+int myrandom (int i) { return std::rand()%i;}
+
 void DealCardManager::startDeal() {
     _manager->getCardManager()->createCard(createCardHeap(ShuffType::RANDOM));
     _manager->resetTargetId();
@@ -56,6 +58,8 @@ void DealCardManager::initDealConfig() {
         }
         _card_info_vec.push_back(base);
     }
+    // 初始化随机数种子
+    std::srand(std::time(nullptr));
 }
 
 void DealCardManager::endDeal() {
@@ -72,7 +76,7 @@ void DealCardManager::endDeal() {
 std::vector<int> DealCardManager::shuffleByRandom() const {
     std::vector<int> ret(_total_num);
     std::iota(ret.begin(), ret.end(), 1);
-    std::random_shuffle(ret.begin(), ret.end());
+    std::random_shuffle(ret.begin(), ret.end(), myrandom);
     /* bubble sort
      for(int i = 0; i < _deal_num; ++i)
      for (int j = 0; j < _deal_num - _player_num - i; ++j)
