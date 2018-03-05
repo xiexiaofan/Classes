@@ -8,6 +8,54 @@
 #include "SimpleAiActionManager.hpp"
 using namespace cocos2d;
 
+ RestCTName SimpleAiActionManager::identifyRestCard(const CardVec& vec) {
+    CC_ASSERT(vec.size() == 3);
+    int king_count = 0;
+    if (vec.at(0)->getCardData()->getSuit() == CardData::Suit::JOKER) ++king_count;
+    if (vec.at(1)->getCardData()->getSuit() == CardData::Suit::JOKER) ++king_count;
+    if (vec.at(2)->getCardData()->getSuit() == CardData::Suit::JOKER) ++king_count;
+    
+    CC_ASSERT(king_count != 3);
+    if (king_count == 2)
+        return RestCTName::DoubleKing;
+    if (king_count == 1)
+        return RestCTName::SingleKing;
+
+    const int& v0 = vec.at(0)->getCardDat()->getNumber();
+    const int& v1 = vec.at(1)->getCardDat()->getNumber();
+    const int& v2 = vec.at(2)->getCardDat()->getNumber();
+    if (v0 == v1 && v0 == v2)
+        return RestCTName::Three;
+
+    if ((vec.at(0)->getCardData()->getSuit() == vec.at(1)->getCardData()->getSuit()) &&
+        (vec.at(0)->getCardData()->getSuit() == vec.at(2)->getCardData()->getSuit()))
+        return RestCTName::Flush;
+
+    if ((v0*2==v1+v2 && v1<15 && v2<15) ||
+        (v1*2==v0+v2 && v0<15 && v2<15) ||
+        (v2*2==v0+v1 && v0<15 && v1<15))
+        return RestCTName::Straight;
+
+    if (v0==v1 || v0==v2 || v1==v2)
+        return RestCTName::Pair;
+
+    return RestCTName::Common;
+ }
+
+int SimpleAiActionManager::getRestCTNameMutiple(const RestCTName& name) {
+    int ret = 1;
+    switch(name) {
+        case RestCTName::DoubleKing: ret = 4; break;
+        case RestCTName::Three:      ret = 4; break;
+        case RestCTName::Flush:      ret = 3; break;
+        case RestCTName::Straight:   ret = 3; break;
+        case RestCTName::SingleKing: ret = 2; break;
+        case RestCTName::Pair:       ret = 2; break;
+        case RestCTName::Common:     break;
+    }
+    return ret;
+}
+
 bool SimpleAiActionManager::doActionCall(int id) {
     return false;
 }
@@ -25,6 +73,10 @@ bool SimpleAiActionManager::doActionDouble(int id) {
 }
 
 CardType SimpleAiActionManager::doActionPlay(int id) {
+
+
+
+
     return CardType();
 }
 
@@ -125,4 +177,3 @@ CardType SimpleAiActionManager::identityCardType(const CardVec& vec) {
     std::sort(num_vec.begin(), num_vec.end(), [](const int& i1, const int& i2){return i1 < i2;});
     return CardTypeHelper::identifyCardType(num_vec);
 }
-

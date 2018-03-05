@@ -13,13 +13,28 @@
 #include "CardTypeHelper.hpp"
 #include "CardTypeDefine.hpp"
 
+// 底牌种类定义
+enum class RestCTName 
+{
+    DoubleKing,   // 双王
+    Three,        // 三张 
+    Flush,        // 同花
+    Straight,     // 顺子
+    SingleKing,   // 单王
+    Pair,         // 对子
+    Common        // 常规 
+};
+
 class SimpleAiActionManager : public cocos2d::Node
 {
 public:
     using CardVec = std::vector<UICard*>;
-    
+
+    // identify rest_card
+    static RestCTName identifyRestCard(const CardVec& vec);
+    static int getRestCTNameMutiple(const RestCTName& name);
+
     CREATE_FUNC(SimpleAiActionManager);
-    
     void setPreId(int id) { _pre_id = id; }
     
     // ai action

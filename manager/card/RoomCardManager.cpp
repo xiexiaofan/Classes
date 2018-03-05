@@ -189,6 +189,21 @@ void RoomCardManager::refCardToSelected(UICard* card, int index) {
     card->switchSelected();
 }
 
+void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int index) {
+    resetSelected(index);
+
+    auto& inside_vec = _inside_card[index];
+    for (int num : num_vec) {
+        auto& iter = std::find(inside_vec.begin(), inside_vec.end(), [num]{const UIcard* card}{
+            return !card->isSelected() && card->getCardData()->getNumber() == num;
+        });
+        refCardToSelected(*iter, index);
+    }
+
+    if (_debug_ming && index != 0)
+        updateDebugMingSelected(index);
+}
+
 void RoomCardManager::derefCardFromSelected(UICard* card, int index) {
     auto& selected_vec = _selected_card[index];
     auto iter = std::find(selected_vec.begin(), selected_vec.end(), card);
@@ -528,4 +543,17 @@ void RoomCardManager::updateSelectedVecByDebugMing(int index) {
     for (size_t i = 0; i < debug_vec.size(); ++i)
         debug_vec[i]->isSelected() ? refCardToSelected(inside_vec[i], index)
                                    : derefCardFromSelected(inside_vec[i], index);
+}
+
+void RoomCardManager::updateDebugMingSelected(int index) {
+    if (!_debug_ming || index == 0)
+        return;
+
+    auto& debug_vec  = _debug_card[index];
+    auto& inside_vec = _inside_card[index];
+    for (size_t i = 0; i < inside_vec.size(); ++i)
+        if (inside_vec[i]->isSelected()) {
+            debug_vec[i]->addMask();
+            debug_vec[i]->switchSelected();
+        }
 }

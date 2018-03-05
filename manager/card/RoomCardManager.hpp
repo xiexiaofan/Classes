@@ -32,6 +32,7 @@ public:
     void pushCardToInside(UICard* card, int index);
     
     void refCardToSelected(UICard* card, int index);
+    void refCardToSelected(const std::vector<int>& num_vec, int index);
     void derefCardFromSelected(UICard* card, int index);
     void resetSelected(int index);
     
@@ -74,6 +75,7 @@ private:
 
     void updateDebugMingVec(int index);
     void updateSelectedVecByDebugMing(int index);
+    void updateDebugMingSelected(int index);
 
 private:
     std::vector<CardAlignConfig> _inside_align_config;
