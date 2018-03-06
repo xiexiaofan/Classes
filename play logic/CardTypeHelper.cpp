@@ -199,21 +199,21 @@ std::vector<CardType> CardTypeHelper::foundGreaterCardType(const NumVec& src, co
        return {};  // noboay can beat Rocket, unless you.
 
    if (lv == CTLevel::L3) {
-       auto rocket = CardTypeHelper::foundCardType(vec, CTName::Rocket);
+       auto rocket = CardTypeHelper::foundCardTypeByName(src, CTName::Rocket);
        for (auto& type : rocket) ret.push_back(type);
 
-       auto bomb_vec = CardTypeHelper::foundCardType(vec, CTName::Bomb);
+       auto bomb_vec = CardTypeHelper::foundCardTypeByName(src, CTName::Bomb);
        for (auto& type : bomb_vec)
            if (CardType::compare(type, target) == CTCmpRes::Greater)
                ret.push_back(type);
    } else if (lv == CTLevel::L1) {
-       auto rocket = CardTypeHelper::foundCardType(vec, CTName::Rocket);
+       auto rocket = CardTypeHelper::foundCardTypeByName(src, CTName::Rocket);
        for (auto& type : rocket) ret.push_back(type);
 
-       auto bomb_vec = CardTypeHelper::foundCardType(vec, CTName::Bomb);
+       auto bomb_vec = CardTypeHelper::foundCardTypeByName(src, CTName::Bomb);
        for (auto& type : bomb_vec) ret.push_back(type);
 
-       auto equal_vec = CardTypeHelper::foundCardType(vec, target.getCTName());
+       auto equal_vec = CardTypeHelper::foundCardTypeByName(src, target.getCTName());
        for (auto& type : equal_vec)
            if (CardType::compare(type, target) == CTCmpRes::Greater)
                ret.push_back(type);
@@ -237,8 +237,8 @@ std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src) {
     };
     for (auto num : r_map[1]) {
         if (isExist(num, d1_vec))      ret.push_back(NumVec(num));
-        else if (isExist(num, d2_vec)) ret.push_back(Numvec(2, num)); 
-        else if (isExist(num, d3_vec)) ret.push_back(NumVec(3, num))
+        else if (isExist(num, d2_vec)) ret.push_back(NumVec(2, num));
+        else if (isExist(num, d3_vec)) ret.push_back(NumVec(3, num));
     }
 
     // 炸弹
@@ -255,6 +255,7 @@ std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src) {
 std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src, const CardType& target) {
     std::vector<NumVec> ret;
 
+    const auto& ct_name = target.getCTName();
     // 考虑接 单张？对子？三张？三带一？顺子？连对？飞机？飞机带翅膀？四带二？炸弹？火箭？
 
 

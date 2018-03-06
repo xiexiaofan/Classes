@@ -32,10 +32,9 @@ using namespace cocos2d;
         return RestCTName::Flush;
 
     if (v0<15 && v1<15 && v2<15) {
-        int aver = (v0 + v1 + v2)/3;
-        if ((v0 == aver && std::abs(v2-v1) == 2) || 
-            (v1 == aver && std::abs(v2-v0) == 2) ||
-            (v2 == aver && std::abs(v1-v0) == 2))
+        if ((v0*2 == v1 + v2 && std::abs(v2-v1) == 2) ||
+            (v1*2 == v0 + v2 && std::abs(v2-v0) == 2) ||
+            (v2*2 == v0 + v1 && std::abs(v1-v0) == 2))
             return RestCTName::Straight;
     }
 
@@ -133,6 +132,10 @@ void SimpleAiActionManager::clearAllNumData() {
     _num_map.clear();
     _pre_id = -1;
     _pre_type = CardType();
+}
+
+NumVec getWaitNumVec(int id) {
+    if ()
 }
 
 SimpleAiActionManager::CardVec SimpleAiActionManager::findCardVec(const CardVec& src, const CardType& ct) {
