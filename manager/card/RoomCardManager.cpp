@@ -418,6 +418,11 @@ void RoomCardManager::updateCardDisplayForInside(int index) {
         SingleCardConfig info = getSingleCardConfig(i, size, _inside_align_config[index]);
         card->runAction(MoveTo::create(0.1f, info.point));
     }
+
+    if (vec.size() == 2)
+        RoomAnimationManager::getInstance()->playAlertAnima(index, 2);
+    else if (vec.size() == 1)
+        RoomAnimationManager::getInstance()->playAlertAnima(index, 1);
 }
 
 void RoomCardManager::updateCardDisplayForOutside(int index) {

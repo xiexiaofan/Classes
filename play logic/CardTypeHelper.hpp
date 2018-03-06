@@ -45,9 +45,16 @@ public:
     
     /**
      * 寻找牌型
+     * @note: 暂时未对带牌部分做处理 
      */
     static std::vector<CardType> foundCardTypeByName(const NumVec& src, const CTName& target);
     static std::vector<CardType> foundGreaterCardType(const NumVec& src, const CardType& target);
+
+    /**
+     * 构建出牌优先序列
+     */
+    static std::vector<NumVec> buildCardType(const NumVec& src);
+    static std::vector<NumVec> buildCardType(const NumVec& src, const CardType& target);
 };
 
 #endif /* CardTypeHelper_hpp */

@@ -31,10 +31,13 @@ using namespace cocos2d;
         (vec.at(0)->getCardData()->getSuit() == vec.at(2)->getCardData()->getSuit()))
         return RestCTName::Flush;
 
-    if ((v0*2==v1+v2 && v1<15 && v2<15) ||
-        (v1*2==v0+v2 && v0<15 && v2<15) ||
-        (v2*2==v0+v1 && v0<15 && v1<15))
-        return RestCTName::Straight;
+    if (v0<15 && v1<15 && v2<15) {
+        int aver = (v0 + v1 + v2)/3;
+        if ((v0 == aver && std::abs(v2-v1) == 2) || 
+            (v1 == aver && std::abs(v2-v0) == 2) ||
+            (v2 == aver && std::abs(v1-v0) == 2))
+            return RestCTName::Straight;
+    }
 
     if (v0==v1 || v0==v2 || v1==v2)
         return RestCTName::Pair;

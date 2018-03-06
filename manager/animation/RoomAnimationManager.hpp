@@ -38,6 +38,10 @@ public:
                            bool is_male,
                            cocos2d::Ref* arg = nullptr);
     
+    // 剩牌提示报警灯
+    void playAlertAnima(int index, int rest);
+
+
     // 结算界面动画
     
 private:
