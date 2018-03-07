@@ -6,7 +6,21 @@
 //
 
 #include "SimpleAiActionManager.hpp"
-using namespace cocos2d;
+
+static SimpleAiActionManager* Instance = nullptr;
+
+SimpleAiActionManager* SimpleAiActionManager::getInstance() {
+    if (!Instance)
+        Instance = new SimpleAiActionManager();
+    return Instance;
+}
+
+void SimpleAiActionManager::destroyInstance() {
+    if (Instance) {
+        delete Instance;
+        Instance = nullptr;
+    }
+}
 
  RestCTName SimpleAiActionManager::identifyRestCard(const CardVec& vec) {
     CC_ASSERT(vec.size() == 3);
@@ -44,7 +58,7 @@ using namespace cocos2d;
     return RestCTName::Common;
  }
 
-int SimpleAiActionManager::getRestCTNameMutiple(const RestCTName& name) {
+int SimpleAiActionManager::getRestCardMutiple(const RestCTName& name) {
     int ret = 1;
     switch(name) {
         case RestCTName::DoubleKing: ret = 4; break;
@@ -66,8 +80,8 @@ bool SimpleAiActionManager::doActionRob(int id) {
     return false;
 }
 
-bool SimpleAiActionManager::doActionBet(int id) {
-    return false;
+int SimpleAiActionManager::doActionBet(int id) {
+    return 0;
 }
 
 bool SimpleAiActionManager::doActionDouble(int id) {
@@ -75,10 +89,6 @@ bool SimpleAiActionManager::doActionDouble(int id) {
 }
 
 CardType SimpleAiActionManager::doActionPlay(int id) {
-
-
-
-
     return CardType();
 }
 
@@ -107,6 +117,21 @@ CardType SimpleAiActionManager::doActionPlay(CardVec& vec, int id) {
     }
 }
 
+std::vector<NumVec>& SimpleAiActionManager::getPlaySeqVec(int id) {
+    if (_play_seq_vec.empty())
+        buildPlaySeqVec(id);
+    return _play_seq_vec;
+}
+
+NumVec& SimpleAiActionManager::getPlayNumVec(int id) {
+    const auto& seq_vec = getPlaySeqVec(id);
+    if (seq_vec.empty())
+        return {};
+    if (_cur_index == seq_vec.size())
+        _cur_index = 0;
+    return seq_vec.at(_cur_index++);
+}
+
 void SimpleAiActionManager::initNumMap(const std::map<int, CardVec>& card_map) {
     addNumData(card_map.at(0), 0);
     addNumData(card_map.at(1), 1);
@@ -132,15 +157,6 @@ void SimpleAiActionManager::clearAllNumData() {
     _num_map.clear();
     _pre_id = -1;
     _pre_type = CardType();
-}
-
-NumVec getWaitNumVec(int id) {
-    if ()
-}
-
-SimpleAiActionManager::CardVec SimpleAiActionManager::findCardVec(const CardVec& src, const CardType& ct) {
-    CardVec ret;
-    return ret;
 }
 
 void SimpleAiActionManager::sortCardVec(CardVec& vec, const CardType& ct) {
@@ -182,4 +198,21 @@ CardType SimpleAiActionManager::identityCardType(const CardVec& vec) {
     for (auto& card : vec) num_vec.push_back(card->getCardData()->getNumber());
     std::sort(num_vec.begin(), num_vec.end(), [](const int& i1, const int& i2){return i1 < i2;});
     return CardTypeHelper::identifyCardType(num_vec);
+}
+
+void SimpleAiActionManager::buildPlaySeqVec(int id) {
+    if (id == _pre_id) { //
+
+    } else {
+
+    }
+    _cur_index = 0;
+}
+
+void SimpleAiActionManager::initPlaySeqVec() {
+    if (!_play_seq_vec.empty()) {
+        std::vector<NumVec> empty_vec;
+        std::swap(_play_seq_Vec, empty_vec);
+    }
+    _cur_index = 0;
 }

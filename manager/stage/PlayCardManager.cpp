@@ -75,11 +75,12 @@ void PlayCardManager::callbackForPass(Event*) {
 
 void PlayCardManager::callbackForTrust(Event*) {
     ; // 托管
-    SimpleToastManager::getInstance()->playToast("托管？其实就是不出牌");
+    SimpleToastManager::getInstance()->playToast("托管？");
     callbackForPass(nullptr);
 }
 
 bool PlayCardManager::init() {
+    _data_manager = RoomDataManager::getInstance();
     return true;
 }
 

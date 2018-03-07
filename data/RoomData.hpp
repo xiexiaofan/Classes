@@ -90,7 +90,7 @@ public:
     void rmAllCardData();
     
     /**
-     * 对牌局进度的相关操作
+     * 对当前牌局进度的相关操作
      */
     void addOneStepInfo(int seat, float dur, const std::string& opt, const std::vector<int>& vec);
     const OneStepInfo& getStepInfo(int index) const { return _step_info_vec.at(index); }

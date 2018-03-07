@@ -137,6 +137,12 @@ void RoomDataManager::rmAllCardData() {
     _pcard_map.clear();
 }
 
+void RoomDataManager::getLandlordId() const {
+    int ret = -1;
+    while (!getPlayerData(++ret)->isLandlord()) continue;
+    return ret;
+}
+
 void RoomDataManager::addOneStepInfo(int seat, float dur, const std::string& opt, const std::vector<int>& vec) {
     OneStepInfo info;
     info.seat = seat;
