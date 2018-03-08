@@ -72,6 +72,8 @@ void PlayCardManager::callbackForPass(Event*) {
     int cur_id = _manager->getTargetId();
     RoomAnimationManager::getInstance()->playPosted(_xxf::en_pass, cur_id);
     
+    _ai_manager->initPlaySeqVec();
+
     // 如果前一个玩家也未出牌时，下一个玩家进入主动出牌状态
     if (_card_manager->isEmptyForOutsideCard(_manager->minusTargetId(cur_id, true)));
         _code = PlayCode::Initiative;

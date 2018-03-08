@@ -47,8 +47,8 @@ public:
      * 寻找牌型
      * @note: 暂时未对带牌部分做处理 
      */
-    static std::vector<CardType> foundCardTypeByName(const NumVec& src, const CTName& name, int tail_type = 0);
     static std::vector<NumVec> foundGreaterCardType(const NumVec& src, const CardType& target);
+    static std::vector<NumVec> foundTheSameCardType(const NumVec& src, const CardType& target);
 
     /**
      * 构建出牌优先序列
