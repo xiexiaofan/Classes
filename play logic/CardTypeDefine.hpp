@@ -82,7 +82,7 @@ public:
     int getCmpNumber() const;
     // 顺子长度
     size_t getStrLength() const;
-    // 带牌类型
+    // 带牌类型: 0表示不带，1表示带单，2表示带对
     size_t getTailType() const;
     
     const CTName& getCTName()  const { return _name; }

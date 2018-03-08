@@ -115,15 +115,16 @@ CardType SimpleAiActionManager::doActionPlay(CardVec& vec, int id) {
             return CardType();
         }
     }
+    initPlaySeqVec();
 }
 
-std::vector<NumVec>& SimpleAiActionManager::getPlaySeqVec(int id) {
+const std::vector<NumVec>& SimpleAiActionManager::getPlaySeqVec(int id) {
     if (_play_seq_vec.empty())
         buildPlaySeqVec(id);
     return _play_seq_vec;
 }
 
-NumVec& SimpleAiActionManager::getPlayNumVec(int id) {
+NumVec SimpleAiActionManager::getPlayNumVec(int id) {
     const auto& seq_vec = getPlaySeqVec(id);
     if (seq_vec.empty())
         return {};
@@ -157,6 +158,7 @@ void SimpleAiActionManager::clearAllNumData() {
     _num_map.clear();
     _pre_id = -1;
     _pre_type = CardType();
+    initPlaySeqVec();
 }
 
 void SimpleAiActionManager::sortCardVec(CardVec& vec, const CardType& ct) {
@@ -196,23 +198,22 @@ void SimpleAiActionManager::sortCardVec(CardVec& vec, const CardType& ct) {
 CardType SimpleAiActionManager::identityCardType(const CardVec& vec) {
     NumVec num_vec;
     for (auto& card : vec) num_vec.push_back(card->getCardData()->getNumber());
-    std::sort(num_vec.begin(), num_vec.end(), [](const int& i1, const int& i2){return i1 < i2;});
+    std::sort(num_vec.begin(), num_vec.end());
     return CardTypeHelper::identifyCardType(num_vec);
 }
 
 void SimpleAiActionManager::buildPlaySeqVec(int id) {
-    if (id == _pre_id) { //
-
-    } else {
-
-    }
+    NumVec num_vec = _num_map.at(id);
+    std::sort(num_vec.begin(), num_vec.end());
+    _play_seq_vec = id == _pre_id ? CardTypeHelper::buildCardType(num_vec)
+                                  : CardTypeHelper::buildCardType(num_vec, _pre_type);
     _cur_index = 0;
 }
 
 void SimpleAiActionManager::initPlaySeqVec() {
     if (!_play_seq_vec.empty()) {
         std::vector<NumVec> empty_vec;
-        std::swap(_play_seq_Vec, empty_vec);
+        std::swap(_play_seq_vec, empty_vec);
     }
     _cur_index = 0;
 }

@@ -18,6 +18,7 @@
 #include "UIOptButton.hpp"
 #include "RoomDebugLayer.hpp"
 #include "RoomAnimationManager.hpp"
+#include "SimpleAiActionManager.hpp"
 #include "CommonDefineSet.hpp"
 using namespace cocos2d;
 
@@ -31,6 +32,7 @@ GameManager::~GameManager() {
     clearListenerForPlayCardEvent();
     RoomDataManager::getInstance()->rmAllPlayerData();
     RoomAnimationManager::getInstance()->destroyInstance();
+    SimpleAiActionManager::getInstance()->destroyInstance();
 }
 
 void GameManager::run() {

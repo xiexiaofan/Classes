@@ -16,7 +16,7 @@ class RoomAnimationManager {
     using Vec2 = cocos2d::Vec2;
 public:
     static RoomAnimationManager* getInstance();
-    static void destroyInstance();
+    void destroyInstance();
     
     void bindCarrierNode(cocos2d::Node* node);
     

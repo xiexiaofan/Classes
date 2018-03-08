@@ -94,8 +94,6 @@ private:
     
     std::vector<cocos2d::Label*> _inside_card_count;
     cocos2d::EventListenerTouchOneByOne* _listener_touch_card;
-    
-    SimpleAiActionManager* _ai_manager;
 
     /**used for debug.*/
     bool _debug_ming;

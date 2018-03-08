@@ -10,10 +10,11 @@
 #include "RoomData.hpp"
 #include "PlayerData.hpp"
 #include "RoomCardManager.hpp"
-#include "RoomDebugLayer.hpp"
 #include "RoomAnimationManager.hpp"
+#include "SimpleAiActionManager.hpp"
 #include "SimpleToastManager.hpp"
 #include "CommonDefineSet.hpp"
+#include "RoomDebugLayer.hpp"
 using namespace cocos2d;
 
 void PlayCardManager::startPlay() {
@@ -26,7 +27,7 @@ void PlayCardManager::startPlay() {
 }
 
 void PlayCardManager::updatePlayConfig() {
-    _card_manager = _manager->getCardManager();
+    _card_manager = _manager->_card_manager;
     _code = PlayCode::Firstly;
 }
 
@@ -41,7 +42,13 @@ void PlayCardManager::callbackForMing(Event*) {
 }
 
 void PlayCardManager::callbackForTip(Event*) {
-    SimpleToastManager::getInstance()->playToast("提示功能尚未完善");
+    int cur_id = _manager->getTargetId();
+    std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
+    
+    if (num_vec.empty())
+        SimpleToastManager::getInstance()->playToast("当前无牌可出");
+    else
+        _card_manager->refCardToSelected(num_vec, cur_id);
 }
 
 void PlayCardManager::callbackForPlay(Event*) {
@@ -50,7 +57,6 @@ void PlayCardManager::callbackForPlay(Event*) {
         SimpleToastManager::getInstance()->playToast("您选的牌不符合出牌规则");
         return;
     }
-    
     // 牌型动画播放判断
     // 牌型倍数变化判断
     if (_cur_panel) {
@@ -74,13 +80,22 @@ void PlayCardManager::callbackForPass(Event*) {
 }
 
 void PlayCardManager::callbackForTrust(Event*) {
-    ; // 托管
-    SimpleToastManager::getInstance()->playToast("托管？");
-    callbackForPass(nullptr);
+    int cur_id = _manager->getTargetId();
+    std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
+    
+    if (num_vec.empty()) {
+        SimpleToastManager::getInstance()->playToast("当前无牌可出");
+        callbackForPass(nullptr);
+    }
+    else {
+        _card_manager->refCardToSelected(num_vec, cur_id);
+        callbackForPlay(nullptr);
+    }
 }
 
 bool PlayCardManager::init() {
     _data_manager = RoomDataManager::getInstance();
+    _ai_manager   = SimpleAiActionManager::getInstance();
     return true;
 }
 

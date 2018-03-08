@@ -25,6 +25,10 @@ static std::map<RestCTName, std::string> rest_path = {
     {RestCTName::Flush,      "table_gz_hs.png"}
 };
 
+static int GapX_Widest = 63;
+static int GapX_Normal = 58;
+static int GapX_Narrow = 50;
+
 RoomCardManager::~RoomCardManager() {
     RoomDataManager::getInstance()->rmAllCardData();
     clearAllCard();
@@ -69,8 +73,11 @@ void RoomCardManager::clearAllCard() {
     _outside_card.clear();
     _selected_card.clear();
     _rest_card_vec.clear();
-    _ai_manager->clearAllNumData();
     rmRestCardType();
+    
+    SimpleAiActionManager::getInstance()->clearAllNumData();
+    
+    _inside_align_config.at(0).gap_x = GapX_Normal;
     
     /**used for debug. */
     clearAllDebugMing();
@@ -94,7 +101,7 @@ void RoomCardManager::callbackForDeal() {
             card->runAction(Sequence::create(DelayTime::create(0.4f), mt_1, DelayTime::create(0.08f), call, mt_2, nullptr));
         }
         // ai manager
-        _ai_manager->addNumData(vec, index);
+        SimpleAiActionManager::getInstance()->addNumData(vec, index);
         
     };
     for (int i = 0; i < _inside_card.size(); ++i)
@@ -123,6 +130,9 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
     std::sort(card_vec.begin(), card_vec.end(), [](const UICard* c1, const UICard* c2){
         return c1->getCardData()->getId() > c2->getCardData()->getId();
     });
+    
+    if (landlord == 0) _inside_align_config.at(0).gap_x = GapX_Narrow;
+    
     int size = static_cast<int>(card_vec.size());
     for (int i = 0; i < size; ++i) {
         UICard* card = card_vec.at(i);
@@ -148,14 +158,14 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
     }
     
     // ai manager
-    _ai_manager->addNumData(_rest_card_vec, landlord);
-    _ai_manager->setPreId(landlord);
+    SimpleAiActionManager::getInstance()->addNumData(_rest_card_vec, landlord);
+    SimpleAiActionManager::getInstance()->setPreId(landlord);
     
     // identify rest card
-    auto type = SimpleAiActionManager::identifyRestCard(_rest_card_vec);
+    auto type = SimpleAiActionManager::getInstance()->identifyRestCard(_rest_card_vec);
     if (type != RestCTName::Common) {
         initRestCardType(rest_path[type],
-                         SimpleAiActionManager::getRestCTNameMutiple(type));
+                         SimpleAiActionManager::getInstance()->getRestCardMutiple(type));
     }
 }
 
@@ -175,7 +185,7 @@ bool RoomCardManager::callbackForPopCard(int index) {
     
     // judge
     auto& selected = _selected_card[index];
-    auto type = _ai_manager->doActionPlay(selected, index);
+    auto type = SimpleAiActionManager::getInstance()->doActionPlay(selected, index);
     if (type.getCTName() == CTName::Undef)
         return false;
     
@@ -359,16 +369,12 @@ void RoomCardManager::clearAllDebugMing() {
 bool RoomCardManager::init() {
     initCardAlignConfig();
     initCardCountLabel();
-    
-    _ai_manager = SimpleAiActionManager::create();
-    this->addChild(_ai_manager);
-    
     return true;
 }
 
 void RoomCardManager::initCardAlignConfig() {
     // 座位0，1，2的手牌位置参数
-    CardAlignConfig zero_inside(Vec2(595, 86),   0, 99,  50, 0, 1.00);
+    CardAlignConfig zero_inside(Vec2(591, 86),   0, 99,  GapX_Normal, 0, 1.00);
     CardAlignConfig one_inside( Vec2(960, 383),  1, 99,  0,  0, 0.35);
     CardAlignConfig two_inside( Vec2(178, 383), -1, 99,  0,  0, 0.35);
     _inside_align_config.push_back(zero_inside);
@@ -413,16 +419,25 @@ void RoomCardManager::updateCardCountLabel(int index) {
 void RoomCardManager::updateCardDisplayForInside(int index) {
     auto& vec = _inside_card.at(index);
     int size = static_cast<int>(vec.size());
+    CardAlignConfig& align = _inside_align_config[index];
+    // 调整手牌间距
+    if (index == 0) {
+        if (size > 9 && size <= 17 && align.gap_x != GapX_Normal)
+            align.gap_x = GapX_Normal;
+        else if (size <= 9 && align.gap_x != GapX_Widest)
+            align.gap_x = GapX_Widest;
+    }
+    
     for (int i = 0; i < size; ++i) {
         UICard* card = vec.at(i);
-        SingleCardConfig info = getSingleCardConfig(i, size, _inside_align_config[index]);
+        SingleCardConfig info = getSingleCardConfig(i, size, align);
         card->runAction(MoveTo::create(0.1f, info.point));
     }
 
-    if (vec.size() == 2)
-        RoomAnimationManager::getInstance()->playAlertAnima(index, 2);
-    else if (vec.size() == 1)
-        RoomAnimationManager::getInstance()->playAlertAnima(index, 1);
+//    if (vec.size() == 2)
+//        RoomAnimationManager::getInstance()->playAlertAnima(index, 2);
+//    else if (vec.size() == 1)
+//        RoomAnimationManager::getInstance()->playAlertAnima(index, 1);
 }
 
 void RoomCardManager::updateCardDisplayForOutside(int index) {
@@ -564,7 +579,6 @@ void RoomCardManager::updateDebugMingVec(int index) {
 void RoomCardManager::updateSelectedVecByDebugMing(int index) {
     if (!_debug_ming || index == 0)
         return;
-    
     auto& debug_vec  = _debug_card[index];
     auto& inside_vec = _inside_card[index];
     for (size_t i = 0; i < debug_vec.size(); ++i)
@@ -575,7 +589,6 @@ void RoomCardManager::updateSelectedVecByDebugMing(int index) {
 void RoomCardManager::updateDebugMingSelected(int index) {
     if (!_debug_ming || index == 0)
         return;
-
     auto& debug_vec  = _debug_card[index];
     auto& inside_vec = _inside_card[index];
     for (size_t i = 0; i < inside_vec.size(); ++i)

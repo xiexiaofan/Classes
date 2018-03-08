@@ -113,12 +113,11 @@ CardType CardTypeHelper::identifyCardType(const NumVec& src) {
     return ret;
 }
 
-std::vector<CardType> CardTypeHelper::foundCardTypeByName(const NumVec& src, const CTName& target) {
+std::vector<CardType> CardTypeHelper::foundCardTypeByName(const NumVec& src, const CTName& target, int tail_type) {
     std::vector<NumVec> stem_group;
     std::vector<NumVec> tail_group;
     NumMap r_map = CardTypeHelper::splitByRange(src);
     NumMap d_map = CardTypeHelper::splitByDepth(src);
-    bool need_deal_tail = false;
     switch (target) {
         case CTName::Undef: break;
             
@@ -134,27 +133,23 @@ std::vector<CardType> CardTypeHelper::foundCardTypeByName(const NumVec& src, con
             for (auto& i : r_map[3]) stem_group.push_back({i, i, i});
             break;
             
-        case CTName::Tri_t: {
+        case CTName::Tri_t:
             for (auto& i : r_map[3]) stem_group.push_back({i, i, i});
-            need_deal_tail = true;
-        }
             break;
             
-        case CTName::Four_tt: {
+        case CTName::Four_tt:
             for (auto& i : r_map[4]) stem_group.push_back({i, i, i, i});
-            // 两单
-            for (auto iter = d_map[1].begin(); iter != d_map[1].end(); ++iter)
-                for (auto iter2 = iter+1; iter2 != d_map[1].end(); ++iter2)
-                    tail_group.push_back({*iter, *iter2});
-            // 一对
-            for (auto iter = d_map[2].begin(); iter != d_map[2].end(); ++iter)
-                    tail_group.push_back({*iter, *iter});
-            // 两对
-            for (auto iter = d_map[2].begin(); iter != d_map[2].end(); ++iter)
-                for (auto iter2 = iter+1; iter2 != d_map[2].end(); ++iter2)
-                    tail_group.push_back({*iter, *iter, *iter2, *iter2});
-            need_deal_tail = true;
-        }
+//            // 两单
+//            for (auto iter = d_map[1].begin(); iter != d_map[1].end(); ++iter)
+//                for (auto iter2 = iter+1; iter2 != d_map[1].end(); ++iter2)
+//                    tail_group.push_back({*iter, *iter2});
+//            // 一对
+//            for (auto iter = d_map[2].begin(); iter != d_map[2].end(); ++iter)
+//                    tail_group.push_back({*iter, *iter});
+//            // 两对
+//            for (auto iter = d_map[2].begin(); iter != d_map[2].end(); ++iter)
+//                for (auto iter2 = iter+1; iter2 != d_map[2].end(); ++iter2)
+//                    tail_group.push_back({*iter, *iter, *iter2, *iter2});
             break;
             
         case CTName::Str_Single:
@@ -169,10 +164,8 @@ std::vector<CardType> CardTypeHelper::foundCardTypeByName(const NumVec& src, con
             stem_group = CardTypeHelper::splitStraight(r_map[3], 2);
             break;
             
-        case CTName::Str_Tri_t: {
+        case CTName::Str_Tri_t:
             stem_group = CardTypeHelper::splitStraight(r_map[3], 2);
-            need_deal_tail = true;
-        }
             break;
             
         case CTName::Bomb:
@@ -189,36 +182,50 @@ std::vector<CardType> CardTypeHelper::foundCardTypeByName(const NumVec& src, con
     }
     
     std::vector<CardType> ret;
+    if (tail_type != 0) {
+        
+    }
+    
+    
     return ret;
 }
 
-std::vector<CardType> CardTypeHelper::foundGreaterCardType(const NumVec& src, const CardType& target) {
-    std::vector<CardType> ret;
-    CTLevel lv = CardType::getLevel(target.getCTName());
-   if (lv == CTLevel::L5)
-       return {};  // noboay can beat Rocket, unless you.
-
-   if (lv == CTLevel::L3) {
-       auto rocket = CardTypeHelper::foundCardTypeByName(src, CTName::Rocket);
-       for (auto& type : rocket) ret.push_back(type);
-
-       auto bomb_vec = CardTypeHelper::foundCardTypeByName(src, CTName::Bomb);
-       for (auto& type : bomb_vec)
-           if (CardType::compare(type, target) == CTCmpRes::Greater)
-               ret.push_back(type);
-   } else if (lv == CTLevel::L1) {
-       auto rocket = CardTypeHelper::foundCardTypeByName(src, CTName::Rocket);
-       for (auto& type : rocket) ret.push_back(type);
-
-       auto bomb_vec = CardTypeHelper::foundCardTypeByName(src, CTName::Bomb);
-       for (auto& type : bomb_vec) ret.push_back(type);
-
-       auto equal_vec = CardTypeHelper::foundCardTypeByName(src, target.getCTName());
-       for (auto& type : equal_vec)
-           if (CardType::compare(type, target) == CTCmpRes::Greater)
-               ret.push_back(type);
-   }
-   return ret;
+std::vector<NumVec> CardTypeHelper::foundGreaterCardType(const NumVec& src, const CardType& target) {
+//    std::vector<CardType> ret_type;
+//    CTLevel lv = CardType::getLevel(target.getCTName());
+//    if (lv == CTLevel::L5)
+//        return {};  // noboay can beat Rocket, unless you.
+//
+//    if (lv == CTLevel::L3) {
+//        auto rocket = CardTypeHelper::foundCardTypeByName(src, CTName::Rocket);
+//        for (auto& type : rocket) ret_type.push_back(type);
+//
+//        auto bomb_vec = CardTypeHelper::foundCardTypeByName(src, CTName::Bomb);
+//        for (auto& type : bomb_vec)
+//            if (CardType::compare(type, target) == CTCmpRes::Greater)
+//               ret_type.push_back(type);
+//    } else if (lv == CTLevel::L1) {
+//        auto rocket = CardTypeHelper::foundCardTypeByName(src, CTName::Rocket);
+//        for (auto& type : rocket) ret_type.push_back(type);
+//
+//        auto bomb_vec = CardTypeHelper::foundCardTypeByName(src, CTName::Bomb);
+//        for (auto& type : bomb_vec) ret_type.push_back(type);
+//
+//        int tail_type = target.getTailType();
+//        int tail_size = target.getStemVec().size();
+//        auto equal_vec = CardTypeHelper::foundCardTypeByName(src, target.getCTName(), tail_type, tail_size);
+//        for (auto& type : equal_vec)
+//            if (CardType::compare(type, target) == CTCmpRes::Greater)
+//                ret_type.push_back(type);
+//    }
+//
+//    std::vector<NumVec> ret;
+//    for (auto& card_type : ret_type) {
+//        NumVec vec = card_type.getStemVec();
+//
+//    }
+    std::vector<NumVec> ret;
+    return ret;
 }
 
 
@@ -236,7 +243,7 @@ std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src) {
         return std::find(src.begin(), src.end(), num) != src.end();
     };
     for (auto num : r_map[1]) {
-        if (isExist(num, d1_vec))      ret.push_back(NumVec(num));
+        if (isExist(num, d1_vec))      ret.push_back(NumVec({num}));
         else if (isExist(num, d2_vec)) ret.push_back(NumVec(2, num));
         else if (isExist(num, d3_vec)) ret.push_back(NumVec(3, num));
     }
@@ -253,11 +260,5 @@ std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src) {
 }
 
 std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src, const CardType& target) {
-    std::vector<NumVec> ret;
-
-    const auto& ct_name = target.getCTName();
-    // 考虑接 单张？对子？三张？三带一？顺子？连对？飞机？飞机带翅膀？四带二？炸弹？火箭？
-
-
-    return ret;
+    return CardTypeHelper::foundGreaterCardType(src, target);
 }

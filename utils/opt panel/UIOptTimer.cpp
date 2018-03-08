@@ -32,7 +32,7 @@ UIOptTimer::~UIOptTimer()
 {}
 
 bool UIOptTimer::init(const std::string& image, float dur, const callbackForEnd& callback) {
-    _dur = dur;
+    _dur = dur + 0.5;  // 0.5s缓冲时间
     _callback = callback;
     // 添加 计时器
     Sprite* sp = Sprite::createWithSpriteFrameName("room_clock_bg_1.png");

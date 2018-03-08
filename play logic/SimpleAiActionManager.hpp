@@ -52,7 +52,7 @@ public:
 
 public:
     static SimpleAiActionManager* getInstance();
-    static void destroyInstance();
+    void destroyInstance();
 
     // identify rest_card
     RestCTName identifyRestCard(const CardVec& vec);
@@ -66,12 +66,11 @@ public:
     CardType doActionPlay(int id);
     CardType doActionPlay(CardVec& vec, int id);
 
-    std::vector<NumVec>& getPlaySeqVec(int id);
-    NumVec& getPlayNumVec(int id);
+    const std::vector<NumVec>& getPlaySeqVec(int id);
+    NumVec getPlayNumVec(int id);
     
     void setPreId(int id) { _pre_id = id; }
 
-    
     // _num_map operate
     void initNumMap(const std::map<int, CardVec>& card_map);
     void addNumData(const CardVec& vec, int id);

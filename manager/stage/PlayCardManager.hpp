@@ -12,8 +12,11 @@
 
 class RoomDataManager;
 class RoomCardManager;
+class SimpleAiActionManager;
 class UIOptPanel;
+class UICard;
 class RoomDebugLayer;
+
 class PlayCardManager : public cocos2d::Node
 {
 public:
@@ -53,6 +56,7 @@ private:
     GameManager* _manager;
     RoomDataManager* _data_manager;
     RoomCardManager* _card_manager;
+    SimpleAiActionManager* _ai_manager;
     UIOptPanel* _cur_panel;
     PlayCode _code;
     
