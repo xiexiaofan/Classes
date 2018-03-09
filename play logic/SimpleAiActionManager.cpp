@@ -115,7 +115,6 @@ CardType SimpleAiActionManager::doActionPlay(CardVec& vec, int id) {
             return CardType();
         }
     }
-    initPlaySeqVec();
 }
 
 const std::vector<NumVec>& SimpleAiActionManager::getPlaySeqVec(int id) {

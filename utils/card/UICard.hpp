@@ -33,8 +33,8 @@ public:
     bool isFaceTowardUp() const   { return _is_face_up; }
     void setFaceTowardUp(bool face_up);
     
-    void switchSelected()   { _is_selected = !_is_selected; }
-    bool isSelected() const { return _is_selected; }
+    void switchSelected(bool selected)   { _is_selected = selected; }
+    bool isSelected() const              { return _is_selected; }
     
     // mask && logo
     bool hasMask() const         { return _mask && _mask->isVisible(); }

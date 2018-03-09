@@ -81,7 +81,6 @@ public:
     void sortCardVec(CardVec& vec, const CardType& ct);
     CardType identityCardType(const CardVec& vec);
 
-private:
     void buildPlaySeqVec(int id);
     void initPlaySeqVec();
 

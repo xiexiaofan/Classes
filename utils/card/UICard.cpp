@@ -157,7 +157,7 @@ void UICard::openTouchListenerForDebug() {
             touch_in_node.y < size.height * -0.5 ||
             touch_in_node.y > size.height *  0.5)
             return false;
-        this->switchSelected();
+        this->switchSelected(!_is_selected);
         this->isSelected() ? this->addMask() : this->rmMask();
         SimpleAudioEngine::getInstance()->playEffect("sound/effect/select_card.mp3");
         return true;

@@ -57,6 +57,7 @@ void PlayCardManager::callbackForPlay(Event*) {
         SimpleToastManager::getInstance()->playToast("您选的牌不符合出牌规则");
         return;
     }
+    _ai_manager->initPlaySeqVec();
     // 牌型动画播放判断
     // 牌型倍数变化判断
     if (_cur_panel) {

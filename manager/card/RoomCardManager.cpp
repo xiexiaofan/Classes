@@ -209,9 +209,11 @@ void RoomCardManager::refCardToSelected(UICard* card, int index) {
     if (std::find(selected_vec.begin(), selected_vec.end(), card) != selected_vec.end())
         return;
     selected_vec.push_back(card);
-    if (index == 0 && !card->isSelected())
-        card->runAction(MoveBy::create(0.1f, Vec2(0, card->getSizeAfterZoom().height*0.15)));
-    card->switchSelected();
+    if (!card->isSelected()) {
+        card->switchSelected(true);
+        if (index == 0)
+            card->runAction(MoveBy::create(0.1f, Vec2(0, card->getSizeAfterZoom().height*0.15)));
+    }
 }
 
 void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int index) {
@@ -224,7 +226,6 @@ void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int ind
     };
     
     resetSelected(index);
-
     auto& inside_vec = _inside_card[index];
     for (int num : num_vec) {
         size_t i = foundX(inside_vec, num);
@@ -242,9 +243,12 @@ void RoomCardManager::derefCardFromSelected(UICard* card, int index) {
     if (iter == selected_vec.end())
         return;
     selected_vec.erase(iter);
-    if (index == 0 && card->isSelected())
-        card->runAction(MoveBy::create(0.1f, Vec2(0, -card->getSizeAfterZoom().height*0.15)));
-    card->switchSelected();
+    
+    if (card->isSelected()) {
+        card->switchSelected(false);
+        if (index == 0)
+            card->runAction(MoveBy::create(0.1f, Vec2(0, -card->getSizeAfterZoom().height*0.15)));
+    }
 }
 
 void RoomCardManager::resetSelected(int index) {
@@ -259,7 +263,7 @@ void RoomCardManager::resetSelected(int index) {
         for (auto& card : debug_vec)
             if (card->isSelected()) {
                 card->rmMask();
-                card->switchSelected();
+                card->switchSelected(false);
             }
     }
 }
@@ -286,7 +290,6 @@ void RoomCardManager::pushCardToOutside(int index) {
     updateCardCountLabel(index);
     
     resetSelected(index);
-    
     /**used for debug. */
     if (_debug_ming && index != -1)
         updateDebugMingVec(index);
@@ -594,7 +597,7 @@ void RoomCardManager::updateDebugMingSelected(int index) {
     for (size_t i = 0; i < inside_vec.size(); ++i)
         if (inside_vec[i]->isSelected()) {
             debug_vec[i]->addMask();
-            debug_vec[i]->switchSelected();
+            debug_vec[i]->switchSelected(false);
         }
 }
 
