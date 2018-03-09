@@ -12,18 +12,6 @@
 #include "CardTypeHelper.hpp"
 #include "CardTypeDefine.hpp"
 
-// 底牌种类定义
-enum class RestCTName 
-{
-    DoubleKing,   // 双王
-    Three,        // 三张 
-    Flush,        // 同花
-    Straight,     // 顺子
-    SingleKing,   // 单王
-    Pair,         // 对子
-    Common        // 常规 
-};
-
 /*
 ai出牌
 playcardmanger 向 aimanager请求 当前可出牌队列

@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <functional>
+#include <algorithm>
 
 // 牌型种类定义
 enum class CTName
@@ -32,12 +34,12 @@ enum class CTName
 // 牌型级别定义
 enum class CTLevel
 {
-    L0 = -1,
-    L1,
-    L2,
-    L3,
-    L4,
-    L5
+    L0 = -1, // 未定义牌型
+    L1,      
+    L2,      // 癞子炸弹
+    L3,      // 炸弹
+    L4,      // 纯癞子炸弹
+    L5       // 王炸(火箭)
 };
 
 // 牌型比较结果定义
@@ -50,15 +52,22 @@ enum class CTCmpRes
     Less_equal     // 不大于
 };
 
-// typedef
+// using & define
 using NumVec  = std::vector<int>;
 using NumMap  = std::unordered_map<int, NumVec>;
 using NumPair = std::pair<NumVec, NumVec>;
+#define sortByOrder(__NUMVEC__)\
+            std::sort(__NUMVEC__.begin(), __NUMVEC__.end())
+#define sortByReverse(__NUMVEC__)\
+            std::sort(__NUMVEC__.begin(), __NUMVEC__.end(), std::greater<int>())
+#define countNumVec(__NUMVEC__, __VAL__)\
+            std::count(__NUMVEC__.begin(), __NUMVEC__.end(), __VAL__)
+
 
 class CardType
 {
 public:
-    // get level
+    // level
     static CTLevel getLevel(const CTName& name);
     
     // compare
@@ -100,6 +109,5 @@ private:
     NumVec _stem_vec;  // 主干点数序列
     NumVec _tail_vec;  // 带牌点数序列
 };
-
 
 #endif /* CardTypeDefine_hpp */

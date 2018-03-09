@@ -33,7 +33,7 @@ public:
      * @brief 用于拆分顺子
      * @param src 待分析的点数序列：需要先做“去重”,“升序排列”处理
      * @param min_len 满足要求的顺子长度需要大于或等于这个值
-     * @param limit_number 顺子的点数上限默认是14，表示扑克A
+     * @param limit_number 顺子的点数上限默认是14(扑克A)
      * @return 返回符合要求的顺子序列
      */
     static std::vector<NumVec> splitStraight(const NumVec& src, int min_len, int limit_number = 14);
@@ -48,7 +48,7 @@ public:
      * @note: 暂时未对带牌部分做处理 
      */
     static std::vector<NumVec> foundGreaterCardType(const NumVec& src, const CardType& target);
-    static std::vector<NumVec> foundTheSameCardType(const NumVec& src, const CardType& target);
+    static std::vector<NumPair> foundTheSameCardType(const NumVec& src, const CardType& target);
 
     /**
      * 构建出牌优先序列

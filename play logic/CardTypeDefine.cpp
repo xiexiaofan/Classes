@@ -58,12 +58,13 @@ bool CardType::judge(const CTName& name, const NumVec& vec) {
 }
 
 NumPair CardType::split(const CTName& name, const NumVec& vec) {
-    NumPair ret;
+    // @brief： 依次将src中的每个元素复制times份插入到dest末尾位置
     auto insertVal = [](const NumVec& src, NumVec& dest, const size_t& times){
         for (size_t i = 0; i < src.size(); ++i)
-            for (int j = 0; j < times; ++j)
+            for (size_t j = 0; j < times; ++j)
                 dest.push_back(src[i]);
     };
+    NumPair ret;
     size_t size = vec.size();
     NumMap map = CardTypeHelper::splitByDepth(vec);
     switch (name) {
@@ -90,7 +91,7 @@ NumPair CardType::split(const CTName& name, const NumVec& vec) {
                 map[2].size() + map[1].size() == 1) {
                 ret.first = NumVec(3, map[3][0]);
                 ret.second = map[2].size() == 0 ? NumVec(1, map[1][0])
-                : NumVec(2, map[2][0]);
+                                                : NumVec(2, map[2][0]);
             }
             break;
             
@@ -160,7 +161,7 @@ NumPair CardType::split(const CTName& name, const NumVec& vec) {
                                     ret.second.push_back(i);
                                 }
                         }
-                        std::sort(ret.second.begin(), ret.second.end());
+                        sortByOrder(ret.second);
                         break;
                     }
                 }
@@ -175,7 +176,7 @@ NumPair CardType::split(const CTName& name, const NumVec& vec) {
         case CTName::Rocket:
             if (size == 2 && map[1].size() == 2)
                 if (map[1][0] == 16 && map[1][1] == 17)
-                    ret.first = {16, 17};
+                    ret.first = NumVec{16, 17};
             break;
     }
     return ret;
