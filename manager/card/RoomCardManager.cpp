@@ -25,7 +25,7 @@ static std::map<RestCTName, std::string> rest_path = {
     {RestCTName::Flush,      "table_gz_hs.png"}
 };
 
-static int GapX_Widest = 63;
+static int GapX_Widest = 65;
 static int GapX_Normal = 58;
 static int GapX_Narrow = 50;
 
@@ -172,11 +172,9 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
 bool RoomCardManager::callbackForPopCard(int index) {
     /** 出牌流程
      * - 如果开启调试明牌：将调试明牌区引用到选牌区
-     * - 判断选牌区牌组是否符合出牌要求
-     *   符合
-     *      - 将选择的牌 移动到 出牌区 执行出牌动作
-     *   不符合
-     *      - 返回错误
+     * - 判断 选牌区牌组是否符合出牌要求
+     *        符合: 将选择的牌 移动到 出牌区 执行出牌动作
+     *        不符合: 返回false
      */
     
     /**used for debug. */
@@ -189,12 +187,13 @@ bool RoomCardManager::callbackForPopCard(int index) {
     if (type.getCTName() == CTName::Undef)
         return false;
     
+    // toast
     SimpleToastManager::getInstance()->playToast(type.getDescribe());
     
+    // action
     pushCardToOutside(index);
     updateCardDisplayForInside(index);
     updateCardDisplayForOutside(index);
-    
     return true;
 }
 
@@ -209,11 +208,10 @@ void RoomCardManager::refCardToSelected(UICard* card, int index) {
     if (std::find(selected_vec.begin(), selected_vec.end(), card) != selected_vec.end())
         return;
     selected_vec.push_back(card);
-    if (!card->isSelected()) {
-        card->switchSelected(true);
-        if (index == 0)
-            card->runAction(MoveBy::create(0.1f, Vec2(0, card->getSizeAfterZoom().height*0.15)));
-    }
+
+    if (!card->isSelected() && index == 0)
+        card->runAction(MoveBy::create(0.1f, Vec2(0, card->getSizeAfterZoom().height*0.15)));
+    card->switchSelected(true);
 }
 
 void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int index) {
@@ -226,13 +224,14 @@ void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int ind
     };
     
     resetSelected(index);
-    auto& inside_vec = _inside_card[index];
+    CardVec& inside_vec = _inside_card[index];
     for (int num : num_vec) {
         size_t i = foundX(inside_vec, num);
         if (i != inside_vec.size())
             refCardToSelected(inside_vec.at(i), index);
     }
 
+    /** used for debug **/
     if (_debug_ming && index != 0)
         updateDebugMingSelected(index);
 }
@@ -243,12 +242,10 @@ void RoomCardManager::derefCardFromSelected(UICard* card, int index) {
     if (iter == selected_vec.end())
         return;
     selected_vec.erase(iter);
-    
-    if (card->isSelected()) {
-        card->switchSelected(false);
-        if (index == 0)
-            card->runAction(MoveBy::create(0.1f, Vec2(0, -card->getSizeAfterZoom().height*0.15)));
-    }
+
+    if (card->isSelected() && index == 0)
+        card->runAction(MoveBy::create(0.1f, Vec2(0, -card->getSizeAfterZoom().height*0.15)));
+    card->switchSelected(false);
 }
 
 void RoomCardManager::resetSelected(int index) {
@@ -258,14 +255,8 @@ void RoomCardManager::resetSelected(int index) {
         derefCardFromSelected(*iter, index);
     
     /** used for debug **/
-    if (_debug_ming && index != 0) {
-        auto& debug_vec = _debug_card[index];
-        for (auto& card : debug_vec)
-            if (card->isSelected()) {
-                card->rmMask();
-                card->switchSelected(false);
-            }
-    }
+    if (_debug_ming && index != 0)
+        updateDebugMingSelected(index);
 }
 
 void RoomCardManager::pushCardToOutside(int index) {
@@ -289,7 +280,6 @@ void RoomCardManager::pushCardToOutside(int index) {
     }
     updateCardCountLabel(index);
     
-    resetSelected(index);
     /**used for debug. */
     if (_debug_ming && index != -1)
         updateDebugMingVec(index);
@@ -594,11 +584,15 @@ void RoomCardManager::updateDebugMingSelected(int index) {
         return;
     auto& debug_vec  = _debug_card[index];
     auto& inside_vec = _inside_card[index];
-    for (size_t i = 0; i < inside_vec.size(); ++i)
+    for (size_t i = 0; i < inside_vec.size(); ++i) {
         if (inside_vec[i]->isSelected()) {
             debug_vec[i]->addMask();
+            debug_vec[i]->switchSelected(true);
+        } else {
+            debug_vec[i]->rmMask();
             debug_vec[i]->switchSelected(false);
         }
+    }
 }
 
 void RoomCardManager::initRestCardType(const std::string& path, int x) {

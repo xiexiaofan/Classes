@@ -35,7 +35,7 @@ void PlayCardManager::callbackForMing(Event*) {
     /** 流程
      * - panel, 明牌按钮变灰
      * - data, 玩家明牌标识置ture
-     * — mutiply, 牌局倍数变化
+     * - mutiply, 牌局倍数变化
      * - card, 玩家手牌UI变化
      */
     _cur_panel->setBtnEnabled(false, 0);

@@ -117,6 +117,10 @@ CardType CardTypeHelper::identifyCardType(const NumVec& src) {
 std::vector<NumVec> CardTypeHelper::foundGreaterCardType(const NumVec& src, const CardType& target) {
     std::vector<NumVec> ret;
     return ret;
+
+
+    CTName name = target.getCTName(); 
+    CTLevel lv = CardType::getLevel(name);
 }
 
 std::vector<NumVec> CardTypeHelper::foundTheSameCardType(const NumVec& src, const CardType& target) {
