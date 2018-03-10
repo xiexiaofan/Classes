@@ -48,7 +48,7 @@ public:
      * @note: 暂时未对带牌部分做处理 
      */
     static std::vector<NumVec> foundGreaterCardType(const NumVec& src, const CardType& target);
-    static std::vector<NumPair> foundTheSameCardType(const NumVec& src, const CardType& target);
+    static std::vector<NumVec> foundTheSameCardType(const NumVec& src, const CardType& target);
 
     /**
      * 构建出牌优先序列

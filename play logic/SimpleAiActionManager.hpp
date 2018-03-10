@@ -12,25 +12,17 @@
 #include "CardTypeHelper.hpp"
 #include "CardTypeDefine.hpp"
 
-/*
-ai出牌
-playcardmanger 向 aimanager请求 当前可出牌队列
-（随机本轮出牌耗时）
-playcardmanager 将 出牌队列“激活”的牌 同步给 roomcardmanager 执行选中牌操作
-playcardmanager 执行 出牌操作
-
-ai跟牌
-	Playcardmanager 向 aimanager 请求 当前可出牌队列
-		若返回空 playcardmanager执行“要不起”操作
-（随机本轮出牌耗时）
-playcardmanager 将 出牌队列“激活”的牌 同步给 roomcardmanager 执行选中牌操作
-playcardmanager 执行 出牌操作
-
-提示
-   Playcardmanager 向 aimanager 请求 当前可出牌队列中 激活牌组
-   Playcardmanager 将 牌组 同步给 roomcardmanager 执行选中牌操作
-   激活牌组 标识+1（指向下一个待激活牌组）
-*/
+// 底牌种类定义
+enum class RestCTName
+{
+    DoubleKing,   // 双王
+    Three,        // 三张
+    Flush,        // 同花
+    Straight,     // 顺子
+    SingleKing,   // 单王
+    Pair,         // 对子
+    Common        // 常规
+};
 
 class SimpleAiActionManager
 {

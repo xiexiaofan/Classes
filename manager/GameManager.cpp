@@ -205,7 +205,7 @@ void GameManager::runStagePlay() {
 }
 
 void GameManager::runStageSettle() {
-    
+    ;// TODD
 }
 
 void GameManager::displayMatchInfo(float dt) {
@@ -213,7 +213,7 @@ void GameManager::displayMatchInfo(float dt) {
     RoomAnimationManager::getInstance()->updateMatchTimeDisplay(Match_Time_Count);
     if (Match_Time_Count == Match_Timer_Arr[0] + Match_Timer_Arr[1]) {
         std::string id = std::to_string(Match_Index[1]);
-        log("p2 = %s", id.c_str());
+//        log("p2 = %s", id.c_str());
         PlayerData* p2 = PlayerData::loadPlayerConfig(id);
         _data->addPlayerData(p2);
         _scene->loadPlayerData(p2);
@@ -229,7 +229,7 @@ void GameManager::displayMatchInfo(float dt) {
         this->runAction(Sequence::create(DelayTime::create(1.0f), call, nullptr));
     } else if (Match_Time_Count == Match_Timer_Arr[0]) {
         std::string id = std::to_string(Match_Index[0]);
-        log("p1 = %s", id.c_str());
+//        log("p1 = %s", id.c_str());
         PlayerData* p1 = PlayerData::loadPlayerConfig(id);
         _data->addPlayerData(p1);
         _scene->loadPlayerData(p1);

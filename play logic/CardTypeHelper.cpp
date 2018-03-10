@@ -115,7 +115,8 @@ CardType CardTypeHelper::identifyCardType(const NumVec& src) {
 
 
 std::vector<NumVec> CardTypeHelper::foundGreaterCardType(const NumVec& src, const CardType& target) {
-
+    std::vector<NumVec> ret;
+    return ret;
 }
 
 std::vector<NumVec> CardTypeHelper::foundTheSameCardType(const NumVec& src, const CardType& target) {
@@ -196,7 +197,7 @@ std::vector<NumVec> CardTypeHelper::foundTheSameCardType(const NumVec& src, cons
             const NumVec& vec = d_map[1];
             if (std::find(vec.begin(), vec.end(), 16) != vec.end() &&
                 std::find(vec.begin(), vec.end(), 17) != vec.end())
-                stem_group.push_back(Numvec{16, 17});
+                stem_group.push_back(NumVec{16, 17});
         }
             break;
     }
@@ -221,10 +222,11 @@ std::vector<NumVec> CardTypeHelper::foundTheSameCardType(const NumVec& src, cons
 
     auto buildTailVec = [&](const NumVec& stem, const NumVec& tail){
         for (size_t i = 0; i < tail.size(); ++i)
-        countNumVec(stem, tail[i]) < countNumVec() 
+            ;
+    //    countNumVec(stem, tail[i]) < countNumVec()
     };
 
-    return ret;
+    return stem_group;
 }
 
 std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src) {

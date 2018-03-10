@@ -42,7 +42,6 @@ public:
     void callbackForPass(cocos2d::Event*);
     void callbackForTrust(cocos2d::Event*);
     
-    
 private:
     bool init() override;
     
