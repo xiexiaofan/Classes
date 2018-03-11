@@ -50,10 +50,10 @@ public:
     static std::vector<NumVec> foundGreaterCardType(const NumVec& src, const CardType& target);
     static std::vector<NumVec> foundTheSameCardType(const NumVec& src, const CardType& target);
 
-    static std::vector<NumVec> foundNumVecByName(const NumVec& src, const CTName& name);
-    static std::vector<CardType> foundCardTypeByName(const NumVec& src, const CTName& name);
-    static std::vector<NumVec> foundGreaterNumVec(const NumVec& src, const CardType& target);
-    static std::vector<CardType> foundGreaterCardType(const NumVec& src, const CardType& target);
+//    static std::vector<NumVec> foundNumVecByName(const NumVec& src, const CTName& name);
+//    static std::vector<CardType> foundCardTypeByName(const NumVec& src, const CTName& name);
+//    static std::vector<NumVec> foundGreaterNumVec(const NumVec& src, const CardType& target);
+//    static std::vector<CardType> foundGreaterCardType(const NumVec& src, const CardType& target);
     
     
     /**

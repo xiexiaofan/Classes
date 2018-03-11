@@ -49,7 +49,8 @@ public:
     const std::vector<NumVec>& getPlaySeqVec(int id);
     NumVec getPlayNumVec(int id);
     
-    void setPreId(int id) { _pre_id = id; }
+    void setPreId(int id)      { _pre_id = id; }
+    void setCurIdx(size_t idx) { _cur_index = idx; }
 
     // _num_map operate
     void initNumMap(const std::map<int, CardVec>& card_map);

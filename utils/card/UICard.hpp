@@ -37,7 +37,7 @@ public:
     bool isSelected() const              { return _is_selected; }
     
     // mask && logo
-    bool hasMask() const         { return _mask && _mask->isVisible(); }
+    bool hasMask() const         { return _mask != nullptr && _mask->isVisible(); }
     void addMask();
     void rmMask();
     bool hasMingLogo() const     { return _ming_logo && _ming_logo->isVisible(); }

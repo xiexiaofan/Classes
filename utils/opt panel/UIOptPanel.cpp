@@ -21,8 +21,8 @@ static std::map<UIOptPanel::Type, std::pair<float, std::string>> Timer_Config_Re
     {UIOptPanel::Type::DOUBLE,     {5.0f, _xxf::en_nodouble}},
     {UIOptPanel::Type::MING,       {10.0f, _xxf::en_trust}},
     {UIOptPanel::Type::PASS,       {1.0f, _xxf::en_pass}},
-    {UIOptPanel::Type::PLAY_LIMIT, {1.0f, _xxf::en_trust}},
-    {UIOptPanel::Type::PLAY,       {1.0f, _xxf::en_trust}}
+    {UIOptPanel::Type::PLAY_LIMIT, {5.0f, _xxf::en_trust}},
+    {UIOptPanel::Type::PLAY,       {5.0f, _xxf::en_trust}}
 };
 
 // 按钮 配置: { 操作盘种类， 按钮点击触发事件名 }

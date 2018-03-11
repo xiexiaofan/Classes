@@ -93,28 +93,20 @@ CardType SimpleAiActionManager::doActionPlay(int id) {
 }
 
 CardType SimpleAiActionManager::doActionPlay(CardVec& vec, int id) {
-    if (id == _pre_id) {
-        auto ret = identityCardType(vec);
-        if (ret.getCTName() != CTName::Undef) {
-            _pre_type = ret;
-            sortCardVec(vec, ret);
-            rmNumData(vec, id);
-            return ret;
-        } else {
-            return CardType();
-        }
-    } else {
-        auto ret = identityCardType(vec);
-        if (CardType::compare(ret, _pre_type) == CTCmpRes::Greater) {
-            _pre_id = id;
-            _pre_type = ret;
-            sortCardVec(vec, ret);
-            rmNumData(vec, id);
-            return ret;
-        } else {
-            return CardType();
-        }
+    auto ret = identityCardType(vec);
+    if (id == _pre_id && ret.getCTName() != CTName::Undef) {
+        _pre_type = ret;
+        sortCardVec(vec, ret);
+        rmNumData(vec, id);
+        return ret;
+    } else if (id != _pre_id && CardType::compare(ret, _pre_type) == CTCmpRes::Greater) {
+        _pre_id = id;
+        _pre_type = ret;
+        sortCardVec(vec, ret);
+        rmNumData(vec, id);
+        return ret;
     }
+    return CardType();
 }
 
 const std::vector<NumVec>& SimpleAiActionManager::getPlaySeqVec(int id) {

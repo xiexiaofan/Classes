@@ -83,6 +83,7 @@ void PlayCardManager::callbackForPass(Event*) {
 }
 
 void PlayCardManager::callbackForTrust(Event*) {
+    _ai_manager->setCurIdx(0);
     int cur_id = _manager->getTargetId();
     std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
     

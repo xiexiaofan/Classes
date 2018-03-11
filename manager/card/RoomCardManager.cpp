@@ -115,6 +115,8 @@ void RoomCardManager::callbackForDeal() {
 }
 
 void RoomCardManager::callbackForPushRestCard(int landlord) {
+    resetSelected(landlord);
+    
     for (UICard* card : _rest_card_vec) {
         UICard* c2 = UICard::create(card->getCardData());
         c2->setModel(UICard::Model::RESTCARD);
@@ -124,7 +126,6 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
         this->addChild(c2);
         pushCardToInside(card, landlord);
     }
-    resetSelected(landlord);
     // 位置更新
     auto& card_vec = _inside_card.at(landlord);
     std::sort(card_vec.begin(), card_vec.end(), [](const UICard* c1, const UICard* c2){
@@ -203,17 +204,6 @@ void RoomCardManager::pushCardToInside(UICard* card, int index) {
     updateCardCountLabel(index);
 }
 
-void RoomCardManager::refCardToSelected(UICard* card, int index) {
-    auto& selected_vec = _selected_card[index];
-    if (std::find(selected_vec.begin(), selected_vec.end(), card) != selected_vec.end())
-        return;
-    selected_vec.push_back(card);
-
-    if (!card->isSelected() && index == 0)
-        card->runAction(MoveBy::create(0.1f, Vec2(0, card->getSizeAfterZoom().height*0.15)));
-    card->switchSelected(true);
-}
-
 void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int index) {
     auto foundX = [](const CardVec& vec, int num){
         size_t ret = 0;
@@ -222,7 +212,6 @@ void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int ind
                 break;
         return ret;
     };
-    
     resetSelected(index);
     CardVec& inside_vec = _inside_card[index];
     for (int num : num_vec) {
@@ -234,6 +223,17 @@ void RoomCardManager::refCardToSelected(const std::vector<int>& num_vec, int ind
     /** used for debug **/
     if (_debug_ming && index != 0)
         updateDebugMingSelected(index);
+}
+
+void RoomCardManager::refCardToSelected(UICard* card, int index) {
+    auto& selected_vec = _selected_card[index];
+    if (std::find(selected_vec.begin(), selected_vec.end(), card) != selected_vec.end())
+        return;
+    selected_vec.push_back(card);
+    
+    if (!card->isSelected() && index == 0)
+        card->runAction(MoveBy::create(0.1f, Vec2(0, card->getSizeAfterZoom().height*0.15)));
+    card->switchSelected(true);
 }
 
 void RoomCardManager::derefCardFromSelected(UICard* card, int index) {
@@ -250,9 +250,10 @@ void RoomCardManager::derefCardFromSelected(UICard* card, int index) {
 
 void RoomCardManager::resetSelected(int index) {
     auto& selected_vec = _selected_card[index];
-    auto iter = selected_vec.begin();
-    while (iter != selected_vec.end())
+    while (!selected_vec.empty()) {
+        auto iter = selected_vec.begin();
         derefCardFromSelected(*iter, index);
+    }
     
     /** used for debug **/
     if (_debug_ming && index != 0)
@@ -273,12 +274,13 @@ void RoomCardManager::pushCardToOutside(int index) {
     auto& outside_vec  = _outside_card[index];
     for (UICard* card : selected_vec) outside_vec.push_back(card);
     
+    selected_vec.clear();
+    
     for (UICard* card : outside_vec) {
 //        RoomDataManager::getInstance()->rmCardData(card->getCardData(), index);
         auto iter = std::find(inside_vec.begin(), inside_vec.end(), card);
         if (iter != inside_vec.end()) inside_vec.erase(iter);
     }
-    updateCardCountLabel(index);
     
     /**used for debug. */
     if (_debug_ming && index != -1)
@@ -424,9 +426,11 @@ void RoomCardManager::updateCardDisplayForInside(int index) {
     for (int i = 0; i < size; ++i) {
         UICard* card = vec.at(i);
         SingleCardConfig info = getSingleCardConfig(i, size, align);
-        card->runAction(MoveTo::create(0.1f, info.point));
+        card->runAction(MoveTo::create(0.1f, Vec2(info.point.x, card->getPositionY())));
     }
 
+    updateCardCountLabel(index);
+    
 //    if (vec.size() == 2)
 //        RoomAnimationManager::getInstance()->playAlertAnima(index, 2);
 //    else if (vec.size() == 1)
