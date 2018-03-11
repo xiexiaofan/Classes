@@ -56,11 +56,11 @@ enum class CTCmpRes
 using NumVec  = std::vector<int>;
 using NumMap  = std::unordered_map<int, NumVec>;
 using NumPair = std::pair<NumVec, NumVec>;
-#define sortByOrder(__NUMVEC__)\
+#define sortByOrder(__NUMVEC__) \
             std::sort(__NUMVEC__.begin(), __NUMVEC__.end())
-#define sortByReverse(__NUMVEC__)\
+#define sortByReverse(__NUMVEC__) \
             std::sort(__NUMVEC__.begin(), __NUMVEC__.end(), std::greater<int>())
-#define countNumVec(__NUMVEC__, __VAL__)\
+#define countNumVec(__NUMVEC__, __VAL__) \
             std::count(__NUMVEC__.begin(), __NUMVEC__.end(), __VAL__)
 
 

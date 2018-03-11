@@ -113,86 +113,75 @@ CardType CardTypeHelper::identifyCardType(const NumVec& src) {
     return ret;
 }
 
-
-std::vector<NumVec> CardTypeHelper::foundGreaterCardType(const NumVec& src, const CardType& target) {
-    std::vector<NumVec> ret;
-    return ret;
-
-
-    CTName name = target.getCTName(); 
-    CTLevel lv = CardType::getLevel(name);
-}
-
-std::vector<NumVec> CardTypeHelper::foundTheSameCardType(const NumVec& src, const CardType& target) {
+std::vector<NumVec> CardTypeHelper::foundTheSameCTName(const NumVec& src, const CTName& name, int straight, int tail_type, int tail_size) {
     std::vector<NumVec> stem_group;
-    std::vector<NumVec> tail_group;
     NumMap r_map = CardTypeHelper::splitByRange(src);
     NumMap d_map = CardTypeHelper::splitByDepth(src);
-    const CTName& name = target.getCTName();
-    int need_deal_tail = 0;
+    bool need_deal_tail = false;
     int need_deal_straight = 0;
+    
     switch (name) {
         case CTName::Undef: break;
-
+            
         case CTName::Single: {
             for (int num : d_map[1]) stem_group.push_back(NumVec(1, num));
             for (int num : r_map[2]) stem_group.push_back(NumVec(1, num));
         }
             break;
-
+            
         case CTName::Pair: {
             for (int num : d_map[2]) stem_group.push_back(NumVec(2, num));
-            for (int num : r_map[3]) stem_group.push_back(NumVec(2, num));
+            for (int num : r_map[2]) stem_group.push_back(NumVec(2, num));
         }
             break;
-
+            
         case CTName::Tri: {
             for (int num : d_map[3]) stem_group.push_back(NumVec(3, num));
-            for (int num : r_map[4]) stem_group.push_back(NumVec(3, num));
+            for (int num : r_map[4]) stem_group.push_back(NumVec(4, num));
         }
             break;
         
         case CTName::Tri_t: {
             for (int num : d_map[3]) stem_group.push_back(NumVec(3, num));
-            for (int num : r_map[4]) stem_group.push_back(NumVec(3, num));
-            need_deal_tail = target.getTailVec().size();
+            for (int num : r_map[4]) stem_group.push_back(NumVec(4, num));
+            need_deal_tail = true;
         }
             break;
         
         case CTName::Four_tt: {
             for (int num : d_map[4]) stem_group.push_back(NumVec(4, num));
-            need_deal_tail = target.getTailVec().size();
+            need_deal_tail = true;
         }
             break;
-        
+            
         case CTName::Str_Single: {
             sortByOrder(r_map[1]);
-            stem_group = CardTypeHelper::splitStraight(r_map[1], target.getStrLength());
+            stem_group = CardTypeHelper::splitStraight(r_map[1], straight);
         }
             break;
         
         case CTName::Str_Pair: {
             sortByOrder(r_map[2]);
-            stem_group = CardTypeHelper::splitStraight(r_map[2], target.getStrLength());
+            stem_group = CardTypeHelper::splitStraight(r_map[2], straight);
             need_deal_straight = 1;
         }
             break;
         
         case CTName::Str_Tri: {
             sortByOrder(r_map[3]);
-            stem_group = CardTypeHelper::splitStraight(r_map[3], target.getStrLength());
+            stem_group = CardTypeHelper::splitStraight(r_map[3], straight);
             need_deal_straight = 2;
         }
             break;
         
         case CTName::Str_Tri_t: {
             sortByOrder(r_map[3]);
-            stem_group = CardTypeHelper::splitStraight(r_map[3], target.getStrLength());
+            stem_group = CardTypeHelper::splitStraight(r_map[3], straight);
             need_deal_straight = 2;
-            need_deal_tail = target.getTailVec().size();
+            need_deal_tail = true;
         }
             break;
-
+            
         case CTName::Bomb:
             for (int num : d_map[4]) stem_group.push_back(NumVec(4, num));
             break;
@@ -205,32 +194,104 @@ std::vector<NumVec> CardTypeHelper::foundTheSameCardType(const NumVec& src, cons
         }
             break;
     }
-
-    // can't found
+    
+    // if not found
     if (stem_group.empty())
-        return stem_group;
-
+        return {};
+    
+    // deal straight
     if (need_deal_straight > 0) {
         for (NumVec& vec : stem_group) {
             size_t len = vec.size();
-            for (int i = 0; i < need_deal_straight; ++i)
+            for (size_t i = 0; i < need_deal_straight; ++i)
                 vec.insert(vec.end(), vec.begin(), vec.begin() + len);
         }
     }
-
-    if (need_deal_tail > 0) {
-        // vec, src, r_1, size
-        // vec, src, r_2, size
-    }
-
-
-    auto buildTailVec = [&](const NumVec& stem, const NumVec& tail){
-        for (size_t i = 0; i < tail.size(); ++i)
-            ;
-    //    countNumVec(stem, tail[i]) < countNumVec()
+    
+    // if doesn't deal tail
+    if (!need_deal_tail)
+        return stem_group;
+    
+    std::vector<NumVec> ret;
+    // lamad
+    auto buildTailVec = [&](const NumVec& stem, const NumVec& src){
+        NumVec ret;
+        auto iter = src.begin();
+        while (iter != src.end() && ret.size() < tail_size/tail_type) {
+            if (countNumVec(stem, *iter) == 0)  // 这里意味着像 {33344434} 这类是未定义牌型
+                ret.push_back(*iter);
+            iter++;
+        }
+        return iter == src.end() ? NumVec() : ret;
     };
+    
+    // 带单
+    if (tail_type == 1) {
+        sortByOrder(r_map[1]);
+        for (NumVec& stem : stem_group) {
+            NumVec vec = buildTailVec(stem, r_map[1]);
+            if (!vec.empty()) {
+                vec.insert(vec.end(), stem.begin(), stem.end());
+                ret.push_back(vec);
+            }
+        }
+    }
+    // 带对
+    if (tail_type == 2) {
+        sortByOrder(r_map[2]);
+        for (NumVec& stem : stem_group) {
+            NumVec vec = buildTailVec(stem, r_map[2]);
+            if (!vec.empty()) {
+                vec.insert(vec.end(), vec.begin(), vec.end());
+                vec.insert(vec.end(), stem.begin(), stem.end());
+                ret.push_back(vec);
+            }
+        }
+    }
+    
+    // finish
+    return ret;
+}
 
-    return stem_group;
+std::vector<NumVec> CardTypeHelper::foundGreaterCardType(const NumVec& src, const CardType& target) {
+    const CTName& name = target.getCTName();
+    const CTLevel lv   = CardType::getLevel(name);
+    std::vector<NumVec> ret;
+    // nobody can beat "Rocket"
+    if (lv == CTLevel::L5)
+        return {};
+    
+    if (lv == CTLevel::L3) {
+        std::vector<NumVec> vec_1 = foundTheSameCTName(src, CTName::Bomb);
+        for (NumVec vec : vec_1) {
+            sortByOrder(vec);
+            CardType type = CardTypeHelper::identifyCardType(vec);
+            if (CardType::compare(type, target) == CTCmpRes::Greater)
+                ret.push_back(vec);
+        }
+        
+        std::vector<NumVec> vec_2 = foundTheSameCTName(src, CTName::Rocket);
+        if (!vec_2.empty())
+            ret.push_back(vec_2[0]);
+    }
+    
+    if (lv == CTLevel::L1) {
+        std::vector<NumVec> vec_1 = foundTheSameCTName(src, name, target.getStrLength(), target.getTailType(), target.getTailVec().size());
+        for (NumVec vec : vec_1) {
+            sortByOrder(vec);
+            CardType type = CardTypeHelper::identifyCardType(vec);
+            if (CardType::compare(type, target) == CTCmpRes::Greater)
+                ret.push_back(vec);
+        }
+        
+        std::vector<NumVec> vec_2 = foundTheSameCTName(src, CTName::Bomb);
+        for (NumVec vec : vec_2) ret.push_back(vec);
+        
+        std::vector<NumVec> vec_3 = foundTheSameCTName(src, CTName::Rocket);
+        for (NumVec vec : vec_3) ret.push_back(vec);
+    }
+    
+    return ret;
 }
 
 std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src) {
@@ -264,7 +325,5 @@ std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src) {
 }
 
 std::vector<NumVec> CardTypeHelper::buildCardType(const NumVec& src, const CardType& target) {
- //   return CardTypeHelper::foundGreaterCardType(src, target);
-    std::vector<NumVec> ret;
-    return ret;
+    return CardTypeHelper::foundGreaterCardType(src, target);
 }
