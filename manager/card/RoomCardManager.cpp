@@ -125,6 +125,7 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
         _total_card_vec.push_back(c2);
         this->addChild(c2);
         pushCardToInside(card, landlord);
+        card->setModel(UICard::Model::HANDCARD);
     }
     // 位置更新
     auto& card_vec = _inside_card.at(landlord);
@@ -148,7 +149,6 @@ void RoomCardManager::callbackForPushRestCard(int landlord) {
     if (landlord == 0) {
         // 底牌插入动画
         for (auto card : _rest_card_vec) {
-            card->setModel(UICard::Model::HANDCARD);
             float delta_y = card->getSizeAfterZoom().height * 0.3;
             card->setPositionY(card->getPositionY() + delta_y);
             card->runAction(Sequence::create(DelayTime::create(0.7f), MoveBy::create(0.3f, Vec2(0, -delta_y)),  nullptr));

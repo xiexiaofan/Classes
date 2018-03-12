@@ -149,8 +149,11 @@ void PlayCardManager::runCodePassive() {
         _cur_panel = nullptr;
     }
     
-    // TODD：panel type还有“要不起”这种可能，需要判断
-    _cur_panel = UIOptPanel::create(UIOptPanel::Type::PLAY, cur_pdata);
+    std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
+    if (num_vec.empty())
+        _cur_panel = UIOptPanel::create(UIOptPanel::Type::Pass, cur_pdata);
+    else 
+        _cur_panel = UIOptPanel::create(UIOptPanel::Type::PLAY_LIMIT, cur_pdata);
     this->addChild(_cur_panel);
     
     // TODD: need ai action
