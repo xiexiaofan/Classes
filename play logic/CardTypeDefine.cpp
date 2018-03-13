@@ -135,7 +135,7 @@ NumPair CardType::split(const CTName& name, const NumVec& vec) {
                 map[2].size() == 0 &&
                 map[1].size() == 0) {
                 size_t s = map[3].size();
-                if (map[3][s-1] - map[2][0] == s - 1 && map[3][s-1] < 15)
+                if (map[3][s-1] - map[3][0] == s - 1 && map[3][s-1] < 15)
                     insertVal(map[3], ret.first, 3);
             }
             break;

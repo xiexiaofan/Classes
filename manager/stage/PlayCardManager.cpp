@@ -163,9 +163,10 @@ void PlayCardManager::runCodePassive() {
     }
     
     std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
-    if (num_vec.empty() && cur_id != 0) {
+    if (num_vec.empty()) {
         _cur_panel = UIOptPanel::create(UIOptPanel::Type::PASS, cur_pdata);
-        _cur_panel->setTimerRest(15);
+        if (cur_id != 0)
+            _cur_panel->setTimerRest(15);
     } else {
         _cur_panel = UIOptPanel::create(UIOptPanel::Type::PLAY_LIMIT, cur_pdata);
     }
