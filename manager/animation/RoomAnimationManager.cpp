@@ -167,7 +167,7 @@ void PostedCreator::updatePosted(const std::string& content) {
             node = getPosted("bu", "yao");
             path = "pass1";
         } else if (ran == 2) {
-            node = getPosted("guo");
+            node = getPosted("bu", "yao");
             path = "pass2";
         } else {
             node = getPosted("bu", "chu");

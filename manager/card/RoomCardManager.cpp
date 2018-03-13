@@ -377,7 +377,7 @@ void RoomCardManager::initCardAlignConfig() {
     _inside_align_config.push_back(two_inside);
 
     // 座位0，1，2的出牌位置参数
-    CardAlignConfig zero_outside(Vec2(589, 275),  0, 99,  36, 0, 0.60);
+    CardAlignConfig zero_outside(Vec2(569, 275),  0, 99,  36, 0, 0.60);
     CardAlignConfig one_outside (Vec2(890, 393),  1, 99, -30, 0, 0.50);
     CardAlignConfig two_outside (Vec2(248, 393), -1, 99,  30, 0, 0.50);
     _outside_align_config.push_back(zero_outside);
@@ -443,6 +443,8 @@ void RoomCardManager::updateCardDisplayForOutside(int index) {
     if (index == 0) {
         for (int i = 0; i < size; ++i) {
             UICard* card = vec.at(i);
+            if (card->hasMask())
+                card->rmMask();
             const SingleCardConfig& config = getSingleCardConfig(i, size, _outside_align_config[index]);
             MoveBy* mb = MoveBy::create(0.12f, Vec2(0, card->getSizeAfterZoom().height * 0.4));
             CallFunc* fade_out = CallFunc::create([card]{

@@ -44,10 +44,13 @@ public:
     
 private:
     bool init() override;
+    void update(float dt) override;
     
     void runCodeFirstly();
     void runCodeInitiative();
     void runCodePassive();
+    
+    void runActionForAiThink();
     
     void endPlay();
     
@@ -58,6 +61,9 @@ private:
     SimpleAiActionManager* _ai_manager;
     UIOptPanel* _cur_panel;
     PlayCode _code;
+    
+    float _ai_think_timer;
+    bool  _need_ai_think;
     
     friend class RoomDebugLayer;
 };

@@ -161,8 +161,8 @@ void GameManager::runStageFree() {
 
 void GameManager::runStageMatch() {
     // 随机匹配时间
-    Match_Timer_Arr[0] = RandomHelper::random_int(1, 1);
-    Match_Timer_Arr[1] = RandomHelper::random_int(1, 1);
+    Match_Timer_Arr[0] = RandomHelper::random_int(2, 3);
+    Match_Timer_Arr[1] = RandomHelper::random_int(1, 3);
     // 随机匹配玩家
     int rand_1 = RandomHelper::random_int(0, 4);
     int rand_2 = RandomHelper::random_int(1, 4);

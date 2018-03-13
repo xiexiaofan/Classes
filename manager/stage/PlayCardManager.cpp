@@ -29,6 +29,7 @@ void PlayCardManager::startPlay() {
 void PlayCardManager::updatePlayConfig() {
     _card_manager = _manager->_card_manager;
     _code = PlayCode::Firstly;
+    _need_ai_think = false;
 }
 
 void PlayCardManager::callbackForMing(Event*) {
@@ -44,9 +45,8 @@ void PlayCardManager::callbackForMing(Event*) {
 void PlayCardManager::callbackForTip(Event*) {
     int cur_id = _manager->getTargetId();
     std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
-    
     if (num_vec.empty())
-        SimpleToastManager::getInstance()->playToast("当前无牌可出");
+        SimpleToastManager::getInstance()->playToast("当前无可出牌型");
     else
         _card_manager->refCardToSelected(num_vec, cur_id);
 }
@@ -64,8 +64,8 @@ void PlayCardManager::callbackForPlay(Event*) {
         _cur_panel->removeFromParent();
         _cur_panel = nullptr;
     }
-    _manager->plusTargetId(1);
     _code = PlayCode::Passive;
+    _manager->plusTargetId(1);
     _card_manager->isEmptyForInsideCard(cur_id) ? endPlay() : startPlay();
 }
 
@@ -74,9 +74,9 @@ void PlayCardManager::callbackForPass(Event*) {
     RoomAnimationManager::getInstance()->playPosted(_xxf::en_pass, cur_id);
     
     _ai_manager->initPlaySeqVec();
-
     // 如果前一个玩家也未出牌时，下一个玩家进入主动出牌状态
-    if (_card_manager->isEmptyForOutsideCard(_manager->minusTargetId(cur_id, true)));
+    int pre_id = _manager->plusTargetId(2, true);
+    if (_card_manager->isEmptyForOutsideCard(pre_id))
         _code = PlayCode::Initiative;
     _manager->plusTargetId(1);
     startPlay();
@@ -88,10 +88,8 @@ void PlayCardManager::callbackForTrust(Event*) {
     std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
     
     if (num_vec.empty()) {
-        SimpleToastManager::getInstance()->playToast("当前无牌可出");
         callbackForPass(nullptr);
-    }
-    else {
+    } else {
         _card_manager->refCardToSelected(num_vec, cur_id);
         callbackForPlay(nullptr);
     }
@@ -100,7 +98,18 @@ void PlayCardManager::callbackForTrust(Event*) {
 bool PlayCardManager::init() {
     _data_manager = RoomDataManager::getInstance();
     _ai_manager   = SimpleAiActionManager::getInstance();
+    this->scheduleUpdate();
     return true;
+}
+
+void PlayCardManager::update(float dt) {
+    if (_need_ai_think == false)
+        return;
+    if (_ai_think_timer > 0) {
+        _ai_think_timer -= dt;
+        return;
+    }
+    runActionForAiThink();
 }
 
 void PlayCardManager::runCodeFirstly() {
@@ -118,11 +127,13 @@ void PlayCardManager::runCodeFirstly() {
     _cur_panel = UIOptPanel::create(UIOptPanel::Type::MING, cur_pdata);
     this->addChild(_cur_panel);
     
-    // TODD: need ai action
+    if (cur_id != 0) {
+        _ai_think_timer = RandomHelper::random_int(1, 4);
+        _need_ai_think = true;
+    }
 }
 
 void PlayCardManager::runCodeInitiative() {
-    // 清空出牌区
     int cur_id = _manager->getTargetId();
     PlayerData* cur_pdata = RoomDataManager::getInstance()->getPlayerData(cur_id);
     _card_manager->clearCardFromOutside(cur_id);
@@ -135,11 +146,13 @@ void PlayCardManager::runCodeInitiative() {
     _cur_panel = UIOptPanel::create(UIOptPanel::Type::PLAY, cur_pdata);
     this->addChild(_cur_panel);
     
-    // TODD: need ai action
+    if (cur_id != 0) {
+        _ai_think_timer = RandomHelper::random_int(1, 4);
+        _need_ai_think = true;
+    }
 }
 
 void PlayCardManager::runCodePassive() {
-    // 清空出牌区
     int cur_id = _manager->getTargetId();
     PlayerData* cur_pdata = RoomDataManager::getInstance()->getPlayerData(cur_id);
     _card_manager->clearCardFromOutside(cur_id);
@@ -150,13 +163,24 @@ void PlayCardManager::runCodePassive() {
     }
     
     std::vector<int> num_vec = _ai_manager->getPlayNumVec(cur_id);
-    if (num_vec.empty())
-        _cur_panel = UIOptPanel::create(UIOptPanel::Type::Pass, cur_pdata);
-    else 
+    if (num_vec.empty() && cur_id != 0) {
+        _cur_panel = UIOptPanel::create(UIOptPanel::Type::PASS, cur_pdata);
+        _cur_panel->setTimerRest(15);
+    } else {
         _cur_panel = UIOptPanel::create(UIOptPanel::Type::PLAY_LIMIT, cur_pdata);
+    }
     this->addChild(_cur_panel);
     
-    // TODD: need ai action
+    if (cur_id != 0) {
+        _ai_think_timer = RandomHelper::random_int(1, 4);
+        _need_ai_think = true;
+    }
+}
+
+void PlayCardManager::runActionForAiThink() {
+    // 调用“托管出牌”
+    _need_ai_think = false;
+    callbackForTrust(nullptr);
 }
 
 void PlayCardManager::endPlay() {
@@ -166,7 +190,6 @@ void PlayCardManager::endPlay() {
     }
     if (_manager->_debug_layer)
         _manager->_debug_layer->updateCode("");
-    
-    // 是否结算
+    // TODD
     SimpleToastManager::getInstance()->playToast("本局游戏结束");
 }
