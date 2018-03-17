@@ -13,7 +13,7 @@ bool DebugLayer::init() {
     if (!Layer::init())
         return false;
     
-    // card
+    // card test
     Vec2 start_pos(600, 470);
     for (int i = 1; i <= 54; ++i) {
         int row = i > 52 ? 4 : (i - 1) % 4;

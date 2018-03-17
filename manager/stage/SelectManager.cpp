@@ -233,7 +233,7 @@ void SelectManager::runForCodeCall() {
     this->addChild(panel, 0, "panel");
     
     if (pdata->getSeatId() != 0)
-        ;  // TODD: need ai action
+        ;  // TODO: need ai action
 }
 
 void SelectManager::runForCodeBet() {
@@ -247,7 +247,7 @@ void SelectManager::runForCodeBet() {
     }
     
     if (pdata->getSeatId() != 0)
-        ;  // TODD: need ai action
+        ;  // TODO: need ai action
 }
 
 void SelectManager::runForCodeRob() {
@@ -267,7 +267,7 @@ void SelectManager::runForCodeRob() {
     this->addChild(panel, 0, "panel");
     
     if (pdata->getSeatId() != 0)
-         ;  // TODD: need ai action
+         ;  // TODO: need ai action
 }
 
 void SelectManager::runForCodeDouble() {
@@ -281,7 +281,7 @@ void SelectManager::runForCodeDouble() {
         this->addChild(panel);
         
         if (pdata->getSeatId() != 0)
-             ;  // TODD: need ai action
+             ;  // TODO: need ai action
     }
 }
 

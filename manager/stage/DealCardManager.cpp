@@ -12,12 +12,12 @@
 using namespace CocosDenshion;
 using namespace cocos2d;
 
-static const Vec2& BirthPos = Vec2(569, 365);
+static const Vec2& BirthPos  = Vec2(569, 365);
 static const float TotalTime = 1.6f;
 static const float DealGap = TotalTime / RoomDataManager::getInstance()->getDealCardNum();
 static const float DealDur = DealGap * RoomDataManager::getInstance()->getPlayerNum();
 
-int myrandom (int i) { return std::rand()%i;}
+int myrandom (int i) { return std::rand()%i; }
 
 void DealCardManager::startDeal() {
     _manager->getCardManager()->createCard(createCardHeap(ShuffType::RANDOM));
@@ -78,10 +78,10 @@ std::vector<int> DealCardManager::shuffleByRandom() const {
     std::iota(ret.begin(), ret.end(), 1);
     std::random_shuffle(ret.begin(), ret.end(), myrandom);
     /* bubble sort
-     for(int i = 0; i < _deal_num; ++i)
-     for (int j = 0; j < _deal_num - _player_num - i; ++j)
-     if (ret[j] < ret[j + _player_num])
-     std::swap(ret[j], ret[j + _player_num]);
+     for (int i = 0; i < _deal_num; ++i)
+        for (int j = 0; j < _deal_num - _player_num - i; ++j)
+            if (ret[j] < ret[j + _player_num])
+                std::swap(ret[j], ret[j + _player_num]);
      */
     return ret;
 }

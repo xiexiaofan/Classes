@@ -39,7 +39,7 @@ void SimpleToastManager::bindCarrierNode(Node* node)
 {
     if (_carrier == node)
         return;
-    // 切换场景时，清除就场景上的toast播放列表
+    // 切换场景时，清除旧场景上的toast播放列表
     for (auto child : _delay_toast_vec) child->removeFromParent();
     for (auto child : _active_toast_vec) child->removeFromParent();
     _delay_toast_vec.clear();

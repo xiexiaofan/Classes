@@ -55,6 +55,7 @@ int GameManager::plusTargetId(int delta, bool only_ret) {
 }
 
 int GameManager::minusTargetId(int delta, bool only_ret) {
+    // FIXME
     int add_delta = _data->getPlayerNum() - delta % _data->getPlayerNum();
     return plusTargetId(add_delta, only_ret);
 }
@@ -205,7 +206,7 @@ void GameManager::runStagePlay() {
 }
 
 void GameManager::runStageSettle() {
-    ;// TODD
+    ;// TODO
 }
 
 void GameManager::displayMatchInfo(float dt) {

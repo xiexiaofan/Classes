@@ -224,7 +224,7 @@ void RoomEntryLayer::onEnter() {
 void RoomEntryLayer::onExit() {
     this->setVisible(false);
     
-    // stop fixed listener about this scene
+    // stop listen in this scene
     auto iter = _listener_vec.begin();
     while (iter != _listener_vec.end()) {
         auto l = *iter;
@@ -579,7 +579,7 @@ void SingleRoomCreator::updateRoomDataDisplay() {
     const int gold_min = value["gold_min"].GetInt();
     const int gold_max = value["gold_max"].GetInt();
     std::string min_str, link_str, max_str;
-    // TODD_xxf: 最好对数值做严格性校正——值是否能被1千整除
+    // TODO(xxf): 最好对数值做严格性校正——值是否能被1千整除
     if (gold_min < 10000)
         min_str = std::to_string(gold_min / 1000) + "千";
     else
